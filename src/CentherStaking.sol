@@ -424,14 +424,54 @@ contract CentherStaking {
 
         if (_amountToCancel > 0) {
             Stake[] stakes = _getUserValidStakes(_poolId);
+            //TODO => sort stakes by desc
             uint256 remainedToCancel = _amountToCancel;
+            uint256 refundRefReward = 0;
+
+            address[] memory referrers = getReferrerAddresses(msg.sender);
+            AffiliateSetting[] memory levelsInfo = _affiliateSettings[_poolId];
+
             for (uint256 i; i < stakes.length; i++) {
                 if (stakes[i].stakedAmount >= remainedToCancel) {
                     stakes[i].stakedAmount -= remainedToCancel;
+
+                    if (_poolInfo.rewardModeForRef == RefMode.TimeBasedReward) {
+                        for (uint8 i = 0; i < referrers.length; i++) {
+                            if (
+                                referrers[i] != address(0) &&
+                                levelsInfo[i].percent != 0
+                            ) {
+                                refundRefReward +=
+                                    (((remainedToCancel *
+                                        levelsInfo[i].percent) / 10000) *
+                                        stakes[i].stakingDuration -
+                                        stakes[i].lastRewardClaimed) /
+                                    _MONTH;
+                            }
+                        }
+                    }
+
                     remainedToCancel = 0;
                     break;
                 } else {
                     remainedToCancel -= stakes[i].stakedAmount;
+
+                    if (_poolInfo.rewardModeForRef == RefMode.TimeBasedReward) {
+                        for (uint8 i = 0; i < referrers.length; i++) {
+                            if (
+                                referrers[i] != address(0) &&
+                                levelsInfo[i].percent != 0
+                            ) {
+                                refundRefReward +=
+                                    (((stakes[i].stakedAmount *
+                                        levelsInfo[i].percent) / 10000) *
+                                        stakes[i].stakingDuration -
+                                        stakes[i].lastRewardClaimed) /
+                                    _MONTH;
+                            }
+                        }
+                    }
+
                     stakes[i].stakedAmount = 0;
                 }
             }
@@ -439,12 +479,12 @@ contract CentherStaking {
             uint256 fee = (_amountToCancel * _poolInfo.cancellationFees) /
                 10000;
             sendingAmountToStaker = _amount - fee;
-            sendingAmountToOwner = fee;
+            sendingAmountToOwner = fee + refundRefReward;
         } else {
             sendingAmountToStaker = _amount;
             sendingAmountToOwner = 0;
         }
-        //TODO => clac unstaked amount reward and refward and transfer to owner
+
         if (_poolInfo.isLP) {
             if (sendingAmountToOwner > 0) {
                 IERC20(_poolInfo[_poolId].stakeToken).transfer(
