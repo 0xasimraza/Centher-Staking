@@ -444,7 +444,7 @@ contract CentherStaking {
             sendingAmountToStaker = _amount;
             sendingAmountToOwner = 0;
         }
-
+        //TODO => clac unstaked amount reward and refward and transfer to owner
         if (_poolInfo.isLP) {
             if (sendingAmountToOwner > 0) {
                 IERC20(_poolInfo[_poolId].stakeToken).transfer(
