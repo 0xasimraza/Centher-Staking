@@ -350,41 +350,37 @@ contract CentherStaking {
                 address(this),
                 _amount
             );
-
-            if (_poolInfo.rewardModeForRef == RefMode.FixedReward) {
-                address[] memory referrers = getReferrerAddresses(msg.sender);
-                AffiliateSetting[] memory levelsInfo = _affiliateSettings[
-                    _poolId
-                ];
-
-                for (uint8 i = 0; i < referrers.length; i++) {
-                    if (
-                        referrers[i] != address(0) && levelsInfo[i].percent != 0
-                    ) {
-                        uint256 _rewardAmount = (_amount *
-                            levelsInfo[i].percent) / 10000;
-
-                        IERC20(_poolInfo.rewardToken).transferFrom(
-                            poolOwner,
-                            referrers[i],
-                            _rewardAmount
-                        );
-
-                        emit RefRewardPaid(
-                            _poolId,
-                            msg.sender,
-                            _rewardAmount,
-                            referrers[i]
-                        );
-                    }
-                }
-            }
         } else {
             IERC20(_poolInfo.stakeToken).transferFrom(
                 msg.sender,
                 poolOwner,
                 _amount
             );
+        }
+
+        if (_poolInfo.rewardModeForRef == RefMode.FixedReward) {
+            address[] memory referrers = getReferrerAddresses(msg.sender);
+            AffiliateSetting[] memory levelsInfo = _affiliateSettings[_poolId];
+
+            for (uint8 i = 0; i < referrers.length; i++) {
+                if (referrers[i] != address(0) && levelsInfo[i].percent != 0) {
+                    uint256 _rewardAmount = (_amount * levelsInfo[i].percent) /
+                        10000;
+
+                    IERC20(_poolInfo.rewardToken).transferFrom(
+                        poolOwner,
+                        referrers[i],
+                        _rewardAmount
+                    );
+
+                    emit RefRewardPaid(
+                        _poolId,
+                        msg.sender,
+                        _rewardAmount,
+                        referrers[i]
+                    );
+                }
+            }
         }
 
         emit AmountStaked(_poolId, msg.sender, _amount);
