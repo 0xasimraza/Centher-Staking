@@ -110,6 +110,8 @@ contract CentherStaking {
 
     uint256 referralDeep = 6;
     uint256 public platformFees = 0.00001 ether;
+    address public platform;
+    IRegistration public register;
     uint256 public poolIds;
 
     uint256 constant _HOURLY = 1 hours;
@@ -119,6 +121,11 @@ contract CentherStaking {
     uint256 constant _QUARTER = _MONTH * 4;
     uint256 constant _HALF_YEAR = _MONTH * 6;
     uint256 constant _YEAR = _MONTH * 12;
+
+    constructor(address _registration, address _platform) {
+        register = IRegistration(_registration);
+        platform = _platform;
+    }
 
     modifier onlyRegisterUser() {
         if (!(register.isRegistered(msg.sender))) {
