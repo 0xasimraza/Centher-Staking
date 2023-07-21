@@ -15,12 +15,12 @@ contract CentherStaking is ICentherStaking {
     uint256 constant _HALF_YEAR = _MONTH * 6;
     uint256 constant _YEAR = 31449600;
 
-     IRegistration public register;
+    IRegistration public register;
 
     uint256 _referralDeep = 6;
     uint256 public platformFees = 0.00001 ether;
     address public platform;
-   
+
     uint256 public poolIds;
 
     mapping(uint256 => PoolInfo) public poolsInfo;
@@ -313,9 +313,9 @@ contract CentherStaking is ICentherStaking {
             revert Locked();
         }
 
-        uint256 _amountToCancel = 0;
-        uint256 sendingAmountToStaker = 0;
-        uint256 sendingAmountToOwner = 0;
+        uint256 _amountToCancel;
+        uint256 sendingAmountToStaker;
+        uint256 sendingAmountToOwner;
 
         if (unstakableAmount > 0) {
             uint256 _remained = _amount;
@@ -403,6 +403,9 @@ contract CentherStaking is ICentherStaking {
             sendingAmountToOwner = 0;
         }
 
+        console2.log("sendingAmountToOwner: ", sendingAmountToOwner);
+        console2.log("sendingAmountToStaker: ", sendingAmountToStaker);
+
         if (_poolInfo.setting.isLP) {
             if (sendingAmountToOwner > 0) {
                 IERC20(_poolInfo.stakeToken).transfer(
@@ -418,12 +421,12 @@ contract CentherStaking is ICentherStaking {
                 );
             }
         } else {
-            uint256 _amountToSendFromOwnerToStaker = sendingAmountToStaker -
-                sendingAmountToOwner;
+            // uint256 _amountToSendFromOwnerToStaker = sendingAmountToStaker -
+            //     sendingAmountToOwner; // bug: re-substract of values
             IERC20(_poolInfo.stakeToken).transferFrom(
                 _poolInfo.poolOwner,
                 msg.sender,
-                _amountToSendFromOwnerToStaker
+                sendingAmountToStaker
             );
         }
 
@@ -435,6 +438,7 @@ contract CentherStaking is ICentherStaking {
         // Stake[] memory _stakes = _getUserValidStakes(_poolId); // redundant line, need to discuss
         Stake[] memory _stakes = userStakes[_poolId][msg.sender];
         uint256 _claimableReward;
+        console2.log("_stakes[0].stakedAmount: ", _stakes[0].stakedAmount);
 
         for (uint256 i; i < _stakes.length; i++) {
             uint256 passdTime = block.timestamp - _stakes[i].lastRewardClaimed;
