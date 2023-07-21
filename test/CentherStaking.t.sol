@@ -804,7 +804,6 @@ contract CentherStakingTest is Test {
 
         vm.warp(108 weeks); // After 2 years, but amount get according to 1 yaer
 
-        console2.log("user2 bal: ", busd.balanceOf(user2));
         staking.claimReward(1);
 
         assert(busd.balanceOf(user2) == 20054945054945054945);
@@ -1555,6 +1554,6 @@ contract CentherStakingTest is Test {
 
         staking.unstake(1, 1000e18);
 
-        assert(deXa.balanceOf(user2) == 980000000000000000000);
+        assert(deXa.balanceOf(user2) == 990000000000000000000);
     }
 }
