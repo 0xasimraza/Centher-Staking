@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import "./interfaces/ICentherStaking.sol";
+import "./interfaces/ICentherStaking2.sol";
 
 import "forge-std/console2.sol";
 

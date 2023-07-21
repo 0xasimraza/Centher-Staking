@@ -13,44 +13,25 @@ interface ICentherStaking {
     error NotRegistered();
     error PoolNotActive();
     error AlreadySetted();
-    error InvalidPoolOwner();
-    error NotValidReferral();
-    error UserStakeNotFound();
     error InvalidRewardRate();
     error InvalidStakeAmount();
-    error InsufficientBalance();
     error InvalidTokenAddress();
     error OnlyPoolOwnerCanAccess();
-    error InvalidStakingDuration();
     error MaxStakableAmountReached();
     error PoolOwnerNotEligibleToStake();
     error ValueNotEqualToPlatformFees();
     error GiveMaxAllowanceOfRewardToken();
-    error ThisPoolNotValidForRestaking();
-    error AmountGreaterThanStakedAmount();
-    error OwnerNotEnoughBalanceToReturnStakeAmount();
+    error CannotSetAffiliateSettingForActivePool();
 
-    event StakingPoolCreated(PoolInfo poolInfo, string metadataUri);
-    event AmountStaked(uint256 poolId, address user, uint256 amount);
-    event AmountUnstaked(uint256 poolId, address user, uint256 amount);
-    event RewardClaimed(uint256 poolId, address user, uint256 amount);
-    event ReferralRewardTransfer(
-        uint256 poolId,
-        address rewardToken,
-        address user,
-        address refferer,
-        uint256 amount
-    );
-
-    enum ClaimDuration {
-        Hourly,
-        Daily,
-        Weekly,
-        Monthly,
-        Quarterly,
-        HalfYearly,
-        Yearly
-    }
+    // enum ClaimDuration {
+    //     Hourly,
+    //     Daily,
+    //     Weekly,
+    //     Monthly,
+    //     Quarterly,
+    //     HalfYearly,
+    //     Yearly
+    // }
 
     enum RefMode {
         NoReward,
@@ -63,9 +44,9 @@ interface ICentherStaking {
         address rewardToken;
         uint256 annualStakingRewardRate;
         uint256 minStakeAmount;
-        uint256 maxStakeAmount; // bool isBalance :true (LP false)
+        uint256 maxStakeAmount;
         uint256 stakingDurationPeriod;
-        uint8 claimDuration;
+        uint256 claimDuration;
         uint8 rewardModeForRef;
         uint256 firstReward;
         uint256 maxStakableAmount;
@@ -79,48 +60,39 @@ interface ICentherStaking {
         address poolOwner;
         address stakeToken;
         address rewardToken;
-        uint256 rewardSupply;
         uint256 annualStakingRewardRate;
         uint256 stakingDurationPeriod;
-        uint8 claimDuration;
-        uint256 totalStakedAmount;
-        PoolSetting poolSetting;
+        uint256 claimDuration;
+        uint256 minStakeAmount;
+        uint256 maxStakeAmount;
+        RefMode rewardModeForRef;
+        PoolSetting setting;
     }
 
     struct PoolSetting {
-        uint256 minStakeAmount;
-        uint256 maxStakeAmount;
-        uint256 firstReward;
+        uint256 firstRewardDuration;
         uint256 maxStakableAmount;
-        RefMode rewardModeForRef;
         uint256 cancellationFees;
         bool isUnstakable;
         bool isLP;
         bool isActive;
     }
 
-    // struct AffilateSetting {
-    //     uint8 mode; // conversion into enum
-    //     ReferralSetting[] levelInfo;
-    // }
-
-    struct ReferralSetting {
-        uint8 level;
+    struct AffiliateSetting {
+        uint256 level;
         uint256 percent;
     }
 
-    struct UserInfo {
-        uint256 stakedTime;
-        uint256 stakedAmount;
-        uint256 lastRewardClaimed;
-        uint256 claimedReward;
-        uint256 stakingDuration;
-        uint256 totalStakes;
-        bool isRestaked;
-        UserAdditionalStakes[] restakes;
+    struct AffiliateSettingInput {
+        uint256 levelOne;
+        uint256 levelTwo;
+        uint256 levelThree;
+        uint256 levelFour;
+        uint256 levelFive;
+        uint256 levelSix;
     }
 
-    struct UserAdditionalStakes {
+    struct Stake {
         uint256 stakingDuration;
         uint256 stakedAmount;
         uint256 stakedTime;
@@ -128,16 +100,19 @@ interface ICentherStaking {
         uint256 claimedReward;
     }
 
-    function createPool(
-        PoolCreationInputs calldata info,
-        uint256[] memory _settings
-    ) external payable;
+    event StakingPoolCreated(PoolInfo poolInfo, string metadataUri);
+    event AmountStaked(uint256 poolId, address user, uint256 amount);
+    event AmountUnstaked(uint256 poolId, address user, uint256 amount);
+    event RewardClaimed(uint256 poolId, address user, uint256 amount);
+    event AffiliateSettingSet(uint256, AffiliateSetting[]);
+    event PoolStateChanged(uint256, bool);
+    event RefRewardPaid(uint256, address, uint256, address);
 
-    function stake(uint256 poolId, uint256 amount, address referral) external;
+    function createPool(PoolCreationInputs calldata _info) external payable;
 
-    function unstake(uint256 pooldId, uint256 amount) external;
+    function stake(uint256 _poolId, uint256 _amount, address referrer) external;
 
-    function claimReward(uint256 pooldId) external;
+    function unstake(uint256 _poolId, uint256 _amount) external;
 
-    function claimTimeBasedRewardForRef(uint256 pooldId) external; //check mode and calculate according to that (execute by ref)
+    function claimReward(uint256 _poolId) external;
 }
