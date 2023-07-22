@@ -13,6 +13,7 @@ interface ICentherStaking {
     error NotRegistered();
     error PoolNotActive();
     error AlreadySetted();
+    error InvalidRewardMode();
     error InvalidRewardRate();
     error InvalidStakeAmount();
     error InvalidTokenAddress();
@@ -106,7 +107,7 @@ interface ICentherStaking {
     event RewardClaimed(uint256 poolId, address user, uint256 amount);
     event AffiliateSettingSet(uint256, AffiliateSetting[]);
     event PoolStateChanged(uint256, bool);
-    event RefRewardPaid(uint256, address, uint256, address);
+    event RefRewardPaid(uint256 poolId, address staker, uint256 reward, address referrer);
 
     function createPool(PoolCreationInputs calldata _info) external payable;
 

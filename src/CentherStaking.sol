@@ -78,6 +78,10 @@ contract CentherStaking is ICentherStaking {
 
         payable(platform).transfer(msg.value);
 
+        if (_info.rewardModeForRef >= 3) {
+            revert InvalidRewardMode();
+        }
+
         RefMode refMode = RefMode(_info.rewardModeForRef);
 
         PoolSetting memory _setting = PoolSetting({
@@ -239,10 +243,12 @@ contract CentherStaking is ICentherStaking {
                     if (
                         referrers[i] != address(0) && levelsInfo[i].percent != 0
                     ) {
-                        refReward +=
-                            (((_amount * levelsInfo[i].percent) / 10000) *
-                                _poolInfo.stakingDurationPeriod) /
-                            _MONTH;
+                        unchecked {
+                            refReward +=
+                                (((_amount * levelsInfo[i].percent) / 10000) *
+                                    _poolInfo.stakingDurationPeriod) /
+                                _MONTH;
+                        }
                     }
                 }
                 totalReward += refReward;
@@ -380,12 +386,14 @@ contract CentherStaking is ICentherStaking {
                                 referrers[i] != address(0) &&
                                 levelsInfo[i].percent != 0
                             ) {
-                                refundRefReward +=
-                                    (((stakes[i].stakedAmount *
-                                        levelsInfo[i].percent) / 10000) *
-                                        stakes[i].stakingDuration -
-                                        stakes[i].lastRewardClaimed) /
-                                    _MONTH;
+                                unchecked {
+                                    refundRefReward +=
+                                        (((stakes[i].stakedAmount *
+                                            levelsInfo[i].percent) / 10000) *
+                                            stakes[i].stakingDuration -
+                                            stakes[i].lastRewardClaimed) /
+                                        _MONTH;
+                                }
                             }
                         }
                     }
@@ -402,9 +410,6 @@ contract CentherStaking is ICentherStaking {
             sendingAmountToStaker = _amount;
             sendingAmountToOwner = 0;
         }
-
-        console2.log("sendingAmountToOwner: ", sendingAmountToOwner);
-        console2.log("sendingAmountToStaker: ", sendingAmountToStaker);
 
         if (_poolInfo.setting.isLP) {
             if (sendingAmountToOwner > 0) {
@@ -438,7 +443,6 @@ contract CentherStaking is ICentherStaking {
         // Stake[] memory _stakes = _getUserValidStakes(_poolId); // redundant line, need to discuss
         Stake[] memory _stakes = userStakes[_poolId][msg.sender];
         uint256 _claimableReward;
-        console2.log("_stakes[0].stakedAmount: ", _stakes[0].stakedAmount);
 
         for (uint256 i; i < _stakes.length; i++) {
             uint256 passdTime = block.timestamp - _stakes[i].lastRewardClaimed;
