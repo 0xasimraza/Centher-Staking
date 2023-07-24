@@ -16,6 +16,8 @@ contract CentherStakingTest is Test {
     address payable public user2;
     address payable public other;
 
+    event PoolStateChanged(uint256, bool);
+
     Token public deXa;
     Token public busd;
     Token public wbnb;
@@ -113,6 +115,97 @@ contract CentherStakingTest is Test {
         assert(staking.poolIds() == 1);
     }
 
+    function testTogglePoolState() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking
+            .PoolCreationInputs(
+                address(deXa),
+                address(busd),
+                200,
+                5e18,
+                10000e18,
+                365 days,
+                2,
+                1,
+                1 weeks,
+                10000e18,
+                100,
+                "www.staking.com/1",
+                true,
+                true
+            );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking
+            .AffiliateSettingInput({
+                levelOne: 600,
+                levelTwo: 400,
+                levelThree: 200,
+                levelFour: 200,
+                levelFive: 200,
+                levelSix: 200
+            });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+        vm.expectEmit(true, true, false, true, address(staking));
+        emit PoolStateChanged(1, false);
+        staking.togglePoolState(1, false);
+    }
+
+    function testTogglePoolStateRevertAlreadySetted() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking
+            .PoolCreationInputs(
+                address(deXa),
+                address(busd),
+                200,
+                5e18,
+                10000e18,
+                365 days,
+                2,
+                1,
+                1 weeks,
+                10000e18,
+                100,
+                "www.staking.com/1",
+                true,
+                true
+            );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking
+            .AffiliateSettingInput({
+                levelOne: 600,
+                levelTwo: 400,
+                levelThree: 200,
+                levelFour: 200,
+                levelFive: 200,
+                levelSix: 200
+            });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        bytes4 selector = bytes4(keccak256("AlreadySetted()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.togglePoolState(1, true);
+    }
+
     function testShouldFailOwnerNotRegistered() external {
         vm.startPrank(owner);
 
@@ -144,7 +237,7 @@ contract CentherStakingTest is Test {
         staking.createPool{value: 0.00001 ether}(_info);
     }
 
-    function testFailCreatePoolWithInvalidStakeTokenAddress() external {
+    function testCreatePoolWithInvalidStakeTokenAddress() external {
         vm.startPrank(user1);
 
         deal(user1, 100 ether);
@@ -169,11 +262,12 @@ contract CentherStakingTest is Test {
                 true
             );
 
-        vm.expectRevert("InvalidTokenAddress");
+        bytes4 selector = bytes4(keccak256("InvalidTokenAddress()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
         staking.createPool{value: 0.00001 ether}(_info);
     }
 
-    function testFailCreatePoolWithInvalidAnnualRate1() external {
+    function testCreatePoolWithInvalidAnnualRate1() external {
         vm.startPrank(user1);
 
         deal(user1, 100 ether);
@@ -198,12 +292,12 @@ contract CentherStakingTest is Test {
                 true
             );
 
-        bytes4 selector = bytes4(keccak256("InvalidRewardRate"));
-        vm.expectRevert(selector);
+        bytes4 selector = bytes4(keccak256("InvalidRewardRate()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
         staking.createPool{value: 0.00001 ether}(_info);
     }
 
-    function testFailCreatePoolWithInvalidAnnualRate2() external {
+    function testCreatePoolWithInvalidAnnualRate2() external {
         vm.startPrank(user1);
 
         deal(user1, 100 ether);
@@ -228,8 +322,8 @@ contract CentherStakingTest is Test {
                 true
             );
 
-        bytes4 selector = bytes4(keccak256("InvalidRewardRate"));
-        vm.expectRevert(selector);
+        bytes4 selector = bytes4(keccak256("InvalidRewardRate()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
         staking.createPool{value: 0.00001 ether}(_info);
     }
 
@@ -264,7 +358,7 @@ contract CentherStakingTest is Test {
         staking.createPool{value: 0.00001 ether}(_info);
     }
 
-    function testFailCreatePoolDueToNotAllowance() external {
+    function testCreatePoolDueToNotAllowance() external {
         vm.startPrank(user1);
 
         deal(user1, 100 ether);
@@ -289,12 +383,12 @@ contract CentherStakingTest is Test {
                 true
             );
 
-        bytes4 selector = bytes4(keccak256("GiveMaxAllowanceOfRewardToken"));
-        vm.expectRevert(selector);
+        bytes4 selector = bytes4(keccak256("GiveMaxAllowanceOfRewardToken()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
         staking.createPool{value: 0.00001 ether}(_info);
     }
 
-    function testFailCreatePoolWithoutPlatformFees() external {
+    function testCreatePoolWithoutPlatformFees() external {
         vm.startPrank(user1);
 
         deal(user1, 100 ether);
@@ -318,11 +412,13 @@ contract CentherStakingTest is Test {
                 true,
                 true
             );
-        vm.expectRevert("ValueNotEqualToPlatformFees()");
+
+        bytes4 selector = bytes4(keccak256("ValueNotEqualToPlatformFees()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
         staking.createPool(_info);
     }
 
-    function testFailPoolAlreadyActive() external {
+    function testPoolAlreadyActive() external {
         vm.startPrank(user1);
 
         deal(user1, 100 ether);
@@ -360,8 +456,10 @@ contract CentherStakingTest is Test {
                 levelFive: 200,
                 levelSix: 200
             });
-
-        vm.expectRevert("CannotSetAffiliateSettingForActivePool()");
+        bytes4 selector = bytes4(
+            keccak256("CannotSetAffiliateSettingForActivePool()")
+        );
+        vm.expectRevert(abi.encodeWithSelector(selector));
         staking.setAffiliateSetting(1, _setting);
     }
 
