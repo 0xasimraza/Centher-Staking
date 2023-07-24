@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import "./interfaces/ICentherStaking.sol";
-import "forge-std/console2.sol";
 
 contract CentherStaking is ICentherStaking {
     uint8 private _unlocked = 1;
@@ -239,7 +238,7 @@ contract CentherStaking is ICentherStaking {
                 ];
 
                 uint256 refReward;
-                for (uint8 i = 0; i < referrers.length; i++) {
+                for (uint8 i; i < referrers.length; i++) {
                     if (
                         referrers[i] != address(0) && levelsInfo[i].percent != 0
                     ) {
@@ -280,7 +279,7 @@ contract CentherStaking is ICentherStaking {
             );
             AffiliateSetting[] memory levelsInfo = affiliateSettings[_poolId];
 
-            for (uint8 i = 0; i < referrers.length; i++) {
+            for (uint8 i; i < referrers.length; i++) {
                 if (referrers[i] != address(0) && levelsInfo[i].percent != 0) {
                     uint256 _rewardAmount = (_amount * levelsInfo[i].percent) /
                         10000;
@@ -365,12 +364,14 @@ contract CentherStaking is ICentherStaking {
                                 referrers[i] != address(0) &&
                                 levelsInfo[i].percent != 0
                             ) {
-                                refundRefReward +=
-                                    (((remainedToCancel *
-                                        levelsInfo[i].percent) / 10000) *
-                                        stakes[i].stakingDuration -
-                                        stakes[i].lastRewardClaimed) /
-                                    _MONTH;
+                                unchecked {
+                                    refundRefReward +=
+                                        (((remainedToCancel *
+                                            levelsInfo[i].percent) / 10000) *
+                                            stakes[i].stakingDuration -
+                                            stakes[i].lastRewardClaimed) /
+                                        _MONTH;
+                                }
                             }
                         }
                     }
@@ -552,7 +553,7 @@ contract CentherStaking is ICentherStaking {
         address userAddress = _user;
         referrerAddresses = new address[](_referralDeep);
 
-        for (uint8 i = 0; i < _referralDeep; i++) {
+        for (uint8 i; i < _referralDeep; i++) {
             address referrerAddress = userReferrer[_poolId][userAddress];
             referrerAddresses[i] = referrerAddress;
             userAddress = referrerAddress;
