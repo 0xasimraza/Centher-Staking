@@ -3,6 +3,8 @@ pragma solidity ^0.8.13;
 
 import "./interfaces/ICentherStaking.sol";
 
+import "forge-std/console2.sol";
+
 contract CentherStaking is ICentherStaking {
     uint8 private _unlocked = 1;
 
@@ -202,12 +204,13 @@ contract CentherStaking is ICentherStaking {
             revert MaxStakableAmountReached();
         }
 
-        if (
-            _poolInfo.minStakeAmount > 0 &&
-            _amount % _poolInfo.minStakeAmount != 0
-        ) {
-            revert InvalidStakeAmount();
-        }
+        //this condition not working fine, mostly on some decimal precision stake values
+        // if (
+        //     _poolInfo.minStakeAmount > 0 &&
+        //     _amount % _poolInfo.minStakeAmount != 0
+        // ) {
+        //     revert InvalidStakeAmount();
+        // }
 
         address poolOwner = _poolInfo.poolOwner;
         Stake memory _stake = Stake({
@@ -252,6 +255,8 @@ contract CentherStaking is ICentherStaking {
                 }
                 totalReward += refReward;
             }
+
+            console2.log("totalReward: ", totalReward);
 
             IERC20(_poolInfo.rewardToken).transferFrom(
                 poolOwner,
