@@ -13,12 +13,14 @@ interface ICentherStaking {
     error NotRegistered();
     error PoolNotActive();
     error AlreadySetted();
+    error NotValidReferral();
     error InvalidRewardMode();
     error InvalidRewardRate();
     error InvalidStakeAmount();
     error InvalidTokenAddress();
     error OnlyPoolOwnerCanAccess();
     error MaxStakableAmountReached();
+    error PoolRefModeIsNotTimeBased();
     error PoolOwnerNotEligibleToStake();
     error ValueNotEqualToPlatformFees();
     error GiveMaxAllowanceOfRewardToken();
@@ -107,7 +109,12 @@ interface ICentherStaking {
     event RewardClaimed(uint256 poolId, address user, uint256 amount);
     event AffiliateSettingSet(uint256, AffiliateSetting[]);
     event PoolStateChanged(uint256, bool);
-    event RefRewardPaid(uint256 poolId, address staker, uint256 reward, address referrer);
+    event RefRewardPaid(
+        uint256 poolId,
+        address staker,
+        uint256 reward,
+        address referrer
+    );
 
     function createPool(PoolCreationInputs calldata _info) external payable;
 
@@ -116,4 +123,6 @@ interface ICentherStaking {
     function unstake(uint256 _poolId, uint256 _amount) external;
 
     function claimReward(uint256 _poolId) external;
+
+    function claimRewardForRef(uint256 _poolId, address _user) external;
 }
