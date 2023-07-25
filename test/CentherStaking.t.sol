@@ -994,6 +994,200 @@ contract CentherStakingTest is Test {
         staking.stake(1, 1000e18, address(0));
     }
 
+    function testMultipleStakeAndUnstakeByUser2AfterStakingDuration() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user2, 10000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking
+            .PoolCreationInputs(
+                address(deXa),
+                address(busd),
+                200,
+                5e18,
+                10000e18,
+                365 days,
+                2,
+                1,
+                1 weeks,
+                10000e18,
+                100,
+                "www.staking.com/1",
+                true,
+                true
+            );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking
+            .AffiliateSettingInput({
+                levelOne: 600,
+                levelTwo: 400,
+                levelThree: 200,
+                levelFour: 200,
+                levelFive: 200,
+                levelSix: 200
+            });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        for (uint256 i = 0; i < 10; i++) {
+            staking.stake(1, 1000e18, address(0));
+        }
+
+        vm.warp(53 weeks);
+
+        for (uint256 i = 0; i < 10; i++) {
+            staking.unstake(1, 1000e18);
+        }
+
+        for (uint256 i = 0; i < 10; i++) {
+            (, uint256 stakedAmount, , , ) = staking.userStakes(1, user2, i);
+            assert(stakedAmount == 0);
+        }
+        assert(deXa.balanceOf(user2) == 10000e18);
+    }
+
+    function testMultipleStakeAndUnstakeByUser2BeforeStakingDuration()
+        external
+    {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user2, 100000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking
+            .PoolCreationInputs(
+                address(deXa),
+                address(busd),
+                200,
+                5e18,
+                10000e18,
+                365 days,
+                2,
+                1,
+                1 weeks,
+                10000e18,
+                100,
+                "www.staking.com/1",
+                true,
+                true
+            );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking
+            .AffiliateSettingInput({
+                levelOne: 600,
+                levelTwo: 400,
+                levelThree: 200,
+                levelFour: 200,
+                levelFive: 200,
+                levelSix: 200
+            });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        for (uint256 i = 0; i < 10; i++) {
+            staking.stake(1, 1000e18, address(0));
+        }
+
+        vm.warp(15 weeks);
+
+        for (uint256 i = 0; i < 10; i++) {
+            staking.unstake(1, 1000e18);
+        }
+
+        for (uint256 i = 0; i < 10; i++) {
+            (, uint256 stakedAmount, , , ) = staking.userStakes(1, user2, i);
+            assert(stakedAmount == 0);
+        }
+
+        assert(deXa.balanceOf(user2) == 99900000000000000000000);
+    }
+
+    function testMultipleStakeAndClaimRefReward() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user2, 10000e18);
+        deal(address(deXa), other, 10000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking
+            .PoolCreationInputs(
+                address(deXa),
+                address(busd),
+                200,
+                5e18,
+                10000e18,
+                365 days,
+                2,
+                2,
+                1 weeks,
+                10000e18,
+                100,
+                "www.staking.com/1",
+                true,
+                true
+            );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking
+            .AffiliateSettingInput({
+                levelOne: 600,
+                levelTwo: 400,
+                levelThree: 200,
+                levelFour: 200,
+                levelFive: 200,
+                levelSix: 200
+            });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        changePrank(other);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 1000e18, address(0));
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        for (uint256 i = 0; i < 10; i++) {
+            staking.stake(1, 1000e18, other);
+        }
+
+        vm.warp(53 weeks);
+        changePrank(other);
+        staking.claimRewardForRef(1, user2);
+    }
+
     // LP is true, testing:
 
     function testStakeAndClaimByUser2AfterStakingDurationLpTrue() external {
@@ -1950,12 +2144,12 @@ contract CentherStakingTest is Test {
                 address(busd),
                 200,
                 5e18,
-                _stakeAmount+1,
+                _stakeAmount + 1,
                 365 days,
                 2,
                 1,
                 1 weeks,
-                _stakeAmount+1,
+                _stakeAmount + 1,
                 100,
                 "www.staking.com/1",
                 false,
