@@ -5,7 +5,7 @@ import "./interfaces/ICentherStaking2.sol";
 
 import "forge-std/console2.sol";
 
-contract CentherStaking is ICentherStaking {
+contract CentherStakingV1 is ICentherStaking {
     address public platform;
     IRegistration public register;
 

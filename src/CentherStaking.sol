@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import "./interfaces/ICentherStaking.sol";
 
 contract CentherStaking is ICentherStaking {
-    uint8 private _unlocked = 1;
+    uint8 private _unlocked;
 
     uint256 constant _HOURLY = 1 hours;
     uint256 constant _DAY = 1 days;
@@ -16,8 +16,8 @@ contract CentherStaking is ICentherStaking {
 
     IRegistration public register;
 
-    uint256 _referralDeep = 6;
-    uint256 public platformFees = 0.00001 ether;
+    uint256 referralDeep;
+    uint256 public platformFees;
     address public platform;
 
     uint256 public poolIds;
@@ -30,7 +30,19 @@ contract CentherStaking is ICentherStaking {
     constructor(address _registration, address _platform) {
         register = IRegistration(_registration);
         platform = _platform;
+        _unlocked = 1;
+        platformFees = 0.00001 ether;
+        referralDeep = 6;
     }
+
+    //uncomment before deployment
+    // function initialize(address _registration, address _platform) public {
+    //     register = IRegistration(_registration);
+    //     platform = _platform;
+    //     _unlocked = 1;
+    //     platformFees = 0.00001 ether;
+    //     referralDeep = 6;
+    // }
 
     modifier onlyRegisterUser() {
         if (!(register.isRegistered(msg.sender))) {
@@ -308,14 +320,10 @@ contract CentherStaking is ICentherStaking {
         uint256 _poolId,
         uint256 _amount
     ) external override nonReentrant {
-        // PoolInfo memory _poolInfo = poolsInfo[_poolId];
-
         (
             uint256 unstakableAmount,
             Stake[] memory unstakablesStakes
         ) = _calcUserUnstakable(_poolId);
-
-        // console2.log("unstakableAmount: ", unstakableAmount);
 
         if (
             unstakableAmount == 0 &&
@@ -355,7 +363,7 @@ contract CentherStaking is ICentherStaking {
 
         if (_amountToCancel > 0) {
             Stake[] memory stakes = _getUserValidStakes(_poolId);
-            //TODO => sort stakes by desc
+
             uint256 remainedToCancel = _amountToCancel;
             uint256 refundRefReward = 0;
 
@@ -442,13 +450,11 @@ contract CentherStaking is ICentherStaking {
 
             if (sendingAmountToStaker > 0) {
                 IERC20(poolsInfo[_poolId].stakeToken).transfer(
-                    msg.sender, // found bug: _poolInfo.poolOwner replace with msg.sender
+                    msg.sender,
                     sendingAmountToStaker
                 );
             }
         } else {
-            // uint256 _amountToSendFromOwnerToStaker = sendingAmountToStaker -
-            //     sendingAmountToOwner; // bug: re-substract of values
             IERC20(poolsInfo[_poolId].stakeToken).transferFrom(
                 poolsInfo[_poolId].poolOwner,
                 msg.sender,
@@ -461,7 +467,6 @@ contract CentherStaking is ICentherStaking {
 
     function claimReward(uint256 _poolId) public override {
         PoolInfo memory _poolInfo = poolsInfo[_poolId];
-        // Stake[] memory _stakes = _getUserValidStakes(_poolId); // redundant line, need to discuss
         Stake[] memory _stakes = userStakes[_poolId][msg.sender];
         uint256 _claimableReward;
 
@@ -549,13 +554,16 @@ contract CentherStaking is ICentherStaking {
         uint256 percent = affilateSetting[levels].percent;
         Stake[] memory _stakes = userStakes[_poolId][referrer];
 
-        for (uint256 i = 0; i < _stakes.length; i++) {
-            if (block.timestamp - _stakes[i].lastRewardClaimed > _MONTH) {
+        for (uint256 i; i < _stakes.length; i++) {
+            uint256 passdTime = block.timestamp - _stakes[i].lastRewardClaimed;
+
+            passdTime = block.timestamp + passdTime > _stakes[i].stakingDuration
+                ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
+                : passdTime;
+            if (passdTime > _MONTH) {
                 unchecked {
                     reward =
-                        (_stakes[i].stakedAmount *
-                            (block.timestamp - _stakes[i].lastRewardClaimed) *
-                            percent) /
+                        (_stakes[i].stakedAmount * (passdTime) * percent) /
                         (_MONTH * 10000);
                 }
 
@@ -633,9 +641,9 @@ contract CentherStaking is ICentherStaking {
         address _user
     ) internal view returns (address[] memory referrerAddresses) {
         address userAddress = _user;
-        referrerAddresses = new address[](_referralDeep);
+        referrerAddresses = new address[](referralDeep);
 
-        for (uint8 i; i < _referralDeep; i++) {
+        for (uint8 i; i < referralDeep; i++) {
             address referrerAddress = userReferrer[_poolId][userAddress];
             referrerAddresses[i] = referrerAddress;
             userAddress = referrerAddress;
