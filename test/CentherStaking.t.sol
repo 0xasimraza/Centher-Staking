@@ -1188,6 +1188,71 @@ contract CentherStakingTest is Test {
         staking.claimRewardForRef(1, user2);
     }
 
+    function testRevertPoolRefModeIsNotTimeBasedOnClaimRefReward() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user2, 10000e18);
+        deal(address(deXa), other, 10000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking
+            .PoolCreationInputs(
+                address(deXa),
+                address(busd),
+                200,
+                5e18,
+                10000e18,
+                365 days,
+                2,
+                1,
+                1 weeks,
+                10000e18,
+                100,
+                "www.staking.com/1",
+                true,
+                true
+            );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking
+            .AffiliateSettingInput({
+                levelOne: 600,
+                levelTwo: 400,
+                levelThree: 200,
+                levelFour: 200,
+                levelFive: 200,
+                levelSix: 200
+            });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        changePrank(other);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 1000e18, address(0));
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        for (uint256 i = 0; i < 10; i++) {
+            staking.stake(1, 1000e18, other);
+        }
+
+        vm.warp(53 weeks);
+        changePrank(other);
+        bytes4 selector = bytes4(keccak256("PoolRefModeIsNotTimeBased()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.claimRewardForRef(1, user2);
+    }
+
     // LP is true, testing:
 
     function testStakeAndClaimByUser2AfterStakingDurationLpTrue() external {
