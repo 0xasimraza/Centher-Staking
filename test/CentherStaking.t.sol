@@ -1183,9 +1183,11 @@ contract CentherStakingTest is Test {
             staking.stake(1, 1000e18, other);
         }
 
-        vm.warp(53 weeks);
+        vm.warp(150 weeks);
         changePrank(other);
         staking.claimRewardForRef(1, user2);
+
+        assert (busd.balanceOf(other)==240659340659340659340);
     }
 
     function testRevertPoolRefModeIsNotTimeBasedOnClaimRefReward() external {
