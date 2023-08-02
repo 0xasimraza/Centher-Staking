@@ -83,11 +83,13 @@ contract CentherStaking is ICentherStaking {
         poolIds++;
         uint256 newPoolId = poolIds;
 
-        if (msg.value < platformFees) {
-            revert ValueNotEqualToPlatformFees();
-        }
+        if (_info.isLP) {
+            if (msg.value < platformFees) {
+                revert ValueNotEqualToPlatformFees();
+            }
 
-        payable(platform).transfer(msg.value);
+            payable(platform).transfer(msg.value);
+        }
 
         if (_info.rewardModeForRef >= 3) {
             revert InvalidRewardMode();
@@ -560,7 +562,7 @@ contract CentherStaking is ICentherStaking {
             passdTime = block.timestamp + passdTime > _stakes[i].stakingDuration
                 ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
                 : passdTime;
-            if (passdTime > _MONTH) {
+            if (passdTime > poolInfo.claimDuration) {
                 unchecked {
                     reward =
                         (_stakes[i].stakedAmount * (passdTime) * percent) /
