@@ -83,7 +83,7 @@ contract CentherStaking is ICentherStaking {
         poolIds++;
         uint256 newPoolId = poolIds;
 
-        if (_info.isLP) {
+        if (_info.showOnCenther) {
             if (msg.value < platformFees) {
                 revert ValueNotEqualToPlatformFees();
             }
@@ -103,7 +103,8 @@ contract CentherStaking is ICentherStaking {
             cancellationFees: _info.cancellationFees,
             isUnstakable: _info.isUnstakable,
             isLP: _info.isLP,
-            isActive: refMode == RefMode.NoReward ? true : false //it stays false untill owner set affiliate settings
+            isActive: refMode == RefMode.NoReward ? true : false, //it stays false untill owner set affiliate settings
+            showOnCenther: _info.showOnCenther
         });
 
         poolsInfo[newPoolId] = PoolInfo({

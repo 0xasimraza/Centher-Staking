@@ -57,6 +57,7 @@ interface ICentherStaking {
         string poolMetadata;
         bool isUnstakable;
         bool isLP;
+        bool claimDuration;
     }
 
     struct PoolInfo {
@@ -79,6 +80,7 @@ interface ICentherStaking {
         bool isUnstakable;
         bool isLP;
         bool isActive;
+        bool showOnCenther;
     }
 
     struct AffiliateSetting {
