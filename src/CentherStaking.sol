@@ -193,6 +193,12 @@ contract CentherStaking is ICentherStaking {
 
         PoolInfo memory _poolInfo = poolsInfo[_poolId];
 
+        if (_poolInfo.setting.showOnCenther) {
+            if (!(register.isRegistered(msg.sender))) {
+                revert NotRegistered();
+            }
+        }
+
         if (!_poolInfo.setting.isActive) {
             revert PoolNotActive();
         }
