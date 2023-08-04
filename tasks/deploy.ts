@@ -40,12 +40,12 @@ export default async function deploy(
   await upgraded.waitForDeployment();
   console.log("Deployed Address", await upgraded.target);
 
-  // if (hre.network.name != "hardhat") {
-  //   await hre.run("verify:verify", {
-  //     address: upgraded.target,
-  //     constructorArguments: [],
-  //   });
-  // }
+  if (hre.network.name != "hardhat") {
+    await hre.run("verify:verify", {
+      address: upgraded.target,
+      constructorArguments: [],
+    });
+  }
 
   // for simple deployment
 
