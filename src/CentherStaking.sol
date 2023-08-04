@@ -90,7 +90,6 @@ contract CentherStaking is ICentherStaking {
 
             payable(platform).transfer(msg.value);
         }
-
         if (_info.rewardModeForRef >= 3) {
             revert InvalidRewardMode();
         }
@@ -129,7 +128,12 @@ contract CentherStaking is ICentherStaking {
             revert GiveMaxAllowanceOfRewardToken();
         }
 
-        emit StakingPoolCreated(poolsInfo[newPoolId], _info.poolMetadata);
+        emit StakingPoolCreated(
+            newPoolId,
+            poolsInfo[newPoolId],
+            msg.value,
+            _info.poolMetadata
+        );
     }
 
     function setAffiliateSetting(
@@ -222,14 +226,6 @@ contract CentherStaking is ICentherStaking {
         if (_poolInfo.setting.maxStakableAmount < _amount) {
             revert MaxStakableAmountReached();
         }
-
-        //this condition not working fine, mostly on some decimal precision stake values
-        // if (
-        //     _poolInfo.minStakeAmount > 0 &&
-        //     _amount % _poolInfo.minStakeAmount != 0
-        // ) {
-        //     revert InvalidStakeAmount();
-        // }
 
         address poolOwner = _poolInfo.poolOwner;
         Stake memory _stake = Stake({
@@ -471,7 +467,7 @@ contract CentherStaking is ICentherStaking {
             );
         }
 
-        emit AmountUnstaked(_poolId, msg.sender, _amount);
+        emit AmountUnstaked(_poolId, msg.sender, _amount, sendingAmountToOwner);
     }
 
     function claimReward(uint256 _poolId) public override {
@@ -569,7 +565,7 @@ contract CentherStaking is ICentherStaking {
             passdTime = block.timestamp + passdTime > _stakes[i].stakingDuration
                 ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
                 : passdTime;
-            if (passdTime > poolInfo.claimDuration) {
+            if (passdTime > _MONTH) {
                 unchecked {
                     reward =
                         (_stakes[i].stakedAmount * (passdTime) * percent) /

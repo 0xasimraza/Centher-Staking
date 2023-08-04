@@ -57,7 +57,7 @@ interface ICentherStaking {
         string poolMetadata;
         bool isUnstakable;
         bool isLP;
-        bool claimDuration;
+        bool showOnCenther;
     }
 
     struct PoolInfo {
@@ -105,12 +105,22 @@ interface ICentherStaking {
         uint256 claimedReward;
     }
 
-    event StakingPoolCreated(PoolInfo poolInfo, string metadataUri);
+    event StakingPoolCreated(
+        uint256 poolId,
+        PoolInfo poolInfo,
+        uint256 platformFees,
+        string metadataUri
+    );
     event AmountStaked(uint256 poolId, address user, uint256 amount);
-    event AmountUnstaked(uint256 poolId, address user, uint256 amount);
+    event AmountUnstaked(
+        uint256 poolId,
+        address user,
+        uint256 amount,
+        uint256 cancellationFees
+    );
     event RewardClaimed(uint256 poolId, address user, uint256 amount);
-    event AffiliateSettingSet(uint256, AffiliateSetting[]);
-    event PoolStateChanged(uint256, bool);
+    event AffiliateSettingSet(uint256, AffiliateSetting[] affiliateSetting);
+    event PoolStateChanged(uint256 poolId, bool poolState);
     event RefRewardPaid(
         uint256 poolId,
         address staker,
