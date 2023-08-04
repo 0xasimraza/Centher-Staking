@@ -95,6 +95,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
+                true,
                 true
             );
 
@@ -136,6 +137,7 @@ contract CentherStakingTest is Test {
                 10000e18,
                 100,
                 "www.staking.com/1",
+                true,
                 true,
                 true
             );
@@ -181,6 +183,7 @@ contract CentherStakingTest is Test {
                 10000e18,
                 100,
                 "www.staking.com/1",
+                true,
                 true,
                 true
             );
@@ -228,6 +231,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
+                true,
                 true
             );
 
@@ -259,6 +263,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
+                true,
                 true
             );
 
@@ -288,6 +293,7 @@ contract CentherStakingTest is Test {
                 10000e18,
                 100,
                 "www.staking.com/1",
+                true,
                 true,
                 true
             );
@@ -319,6 +325,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
+                true,
                 true
             );
 
@@ -348,6 +355,7 @@ contract CentherStakingTest is Test {
                 10000e18,
                 100,
                 "www.staking.com/1",
+                true,
                 true,
                 true
             );
@@ -380,6 +388,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
+                true,
                 true
             );
 
@@ -410,6 +419,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
+                true,
                 true
             );
 
@@ -439,6 +449,7 @@ contract CentherStakingTest is Test {
                 10000e18,
                 100,
                 "www.staking.com/1",
+                true,
                 true,
                 true
             );
@@ -488,6 +499,7 @@ contract CentherStakingTest is Test {
                 10000e18,
                 100,
                 "www.staking.com/1",
+                true,
                 true,
                 true
             );
@@ -547,6 +559,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
+                true,
                 true
             );
 
@@ -605,7 +618,8 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
-                false
+                false,
+                true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -662,7 +676,8 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
-                false
+                false,
+                true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -719,6 +734,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
+                true,
                 true
             );
 
@@ -769,6 +785,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
+                true,
                 true
             );
 
@@ -807,6 +824,7 @@ contract CentherStakingTest is Test {
                 10000e18,
                 100,
                 "www.staking.com/1",
+                true,
                 true,
                 true
             );
@@ -858,6 +876,7 @@ contract CentherStakingTest is Test {
                 10000e18,
                 100,
                 "www.staking.com/1",
+                true,
                 true,
                 true
             );
@@ -912,6 +931,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
+                true,
                 true
             );
 
@@ -965,6 +985,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
+                true,
                 true
             );
 
@@ -1017,6 +1038,7 @@ contract CentherStakingTest is Test {
                 10000e18,
                 100,
                 "www.staking.com/1",
+                true,
                 true,
                 true
             );
@@ -1084,6 +1106,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
+                true,
                 true
             );
 
@@ -1150,6 +1173,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
+                true,
                 true
             );
 
@@ -1187,7 +1211,7 @@ contract CentherStakingTest is Test {
         changePrank(other);
         staking.claimRewardForRef(1, user2);
 
-        assert (busd.balanceOf(other)==240659340659340659340);
+        assert(busd.balanceOf(other) == 240659340659340659340);
     }
 
     function testRevertPoolRefModeIsNotTimeBasedOnClaimRefReward() external {
@@ -1214,6 +1238,7 @@ contract CentherStakingTest is Test {
                 10000e18,
                 100,
                 "www.staking.com/1",
+                true,
                 true,
                 true
             );
@@ -1281,6 +1306,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
+                true,
                 true
             );
 
@@ -1340,6 +1366,7 @@ contract CentherStakingTest is Test {
                 10000e18,
                 100,
                 "www.staking.com/1",
+                true,
                 true,
                 true
             );
@@ -1401,6 +1428,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
+                true,
                 true
             );
 
@@ -1460,6 +1488,7 @@ contract CentherStakingTest is Test {
                 10000e18,
                 100,
                 "www.staking.com/1",
+                true,
                 true,
                 true
             );
@@ -1528,7 +1557,8 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
-                false
+                false,
+                true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1589,7 +1619,8 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
-                false
+                false,
+                true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1649,7 +1680,8 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
-                false
+                false,
+                true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1709,7 +1741,8 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
-                false
+                false,
+                true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1776,6 +1809,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 false,
+                true,
                 true
             );
 
@@ -1838,6 +1872,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 false,
+                true,
                 true
             );
 
@@ -1902,7 +1937,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
-                true
+                true,true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1965,7 +2000,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
-                true
+                true,true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2029,7 +2064,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
-                false
+                false,true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2091,7 +2126,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
-                false
+                false,true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2154,7 +2189,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 true,
-                true
+                true,true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2220,7 +2255,7 @@ contract CentherStakingTest is Test {
                 100,
                 "www.staking.com/1",
                 false,
-                true
+                true,true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
