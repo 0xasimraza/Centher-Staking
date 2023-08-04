@@ -27,22 +27,22 @@ contract CentherStaking is ICentherStaking {
     mapping(uint256 => mapping(address => Stake[])) public userStakes;
     mapping(uint256 => mapping(address => address)) public userReferrer;
 
-    constructor(address _registration, address _platform) {
-        register = IRegistration(_registration);
-        platform = _platform;
-        _unlocked = 1;
-        platformFees = 0.00001 ether;
-        referralDeep = 6;
-    }
-
-    //uncomment before deployment
-    // function initialize(address _registration, address _platform) public {
+    // constructor(address _registration, address _platform) {
     //     register = IRegistration(_registration);
     //     platform = _platform;
     //     _unlocked = 1;
     //     platformFees = 0.00001 ether;
     //     referralDeep = 6;
     // }
+
+    //uncomment before deployment
+    function initialize(address _registration, address _platform) public {
+        register = IRegistration(_registration);
+        platform = _platform;
+        _unlocked = 1;
+        platformFees = 0.00001 ether;
+        referralDeep = 6;
+    }
 
     modifier onlyRegisterUser() {
         if (!(register.isRegistered(msg.sender))) {
