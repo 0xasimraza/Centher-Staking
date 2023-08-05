@@ -27,22 +27,22 @@ contract CentherStaking is ICentherStaking {
     mapping(uint256 => mapping(address => Stake[])) public userStakes;
     mapping(uint256 => mapping(address => address)) public userReferrer;
 
-    // constructor(address _registration, address _platform) {
-    //     register = IRegistration(_registration);
-    //     platform = _platform;
-    //     _unlocked = 1;
-    //     platformFees = 0.00001 ether;
-    //     referralDeep = 6;
-    // }
-
-    //uncomment before deployment
-    function initialize(address _registration, address _platform) public {
+    constructor(address _registration, address _platform) {
         register = IRegistration(_registration);
         platform = _platform;
         _unlocked = 1;
         platformFees = 0.00001 ether;
         referralDeep = 6;
     }
+
+    //uncomment before deployment
+    // function initialize(address _registration, address _platform) public {
+    //     register = IRegistration(_registration);
+    //     platform = _platform;
+    //     _unlocked = 1;
+    //     platformFees = 0.00001 ether;
+    //     referralDeep = 6;
+    // }
 
     modifier onlyRegisterUser() {
         if (!(register.isRegistered(msg.sender))) {
@@ -592,6 +592,40 @@ contract CentherStaking is ICentherStaking {
     }
 
     // utility functions
+
+    function calculateReward(
+        uint256 _poolId,
+        address _user
+    ) external view returns (uint256 claimableReward) {
+        PoolInfo memory _poolInfo = poolsInfo[_poolId];
+        Stake[] memory _stakes = userStakes[_poolId][_user];
+
+        for (uint256 i; i < _stakes.length; i++) {
+            uint256 passdTime = block.timestamp - _stakes[i].lastRewardClaimed;
+
+            passdTime = block.timestamp + passdTime > _stakes[i].stakingDuration
+                ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
+                : passdTime;
+
+            if (passdTime >= _poolInfo.claimDuration) {
+                uint256 reward = _calcReward(
+                    _poolId,
+                    passdTime,
+                    _stakes[i].stakedAmount
+                );
+
+                if (
+                    _stakes[i].lastRewardClaimed == _stakes[i].stakedTime &&
+                    passdTime < _poolInfo.setting.firstRewardDuration
+                ) {
+                    reward = 0;
+                }
+
+                claimableReward += reward;
+            }
+        }
+    }
+
     function _calcReward(
         uint256 _poolId,
         uint256 _duration,
