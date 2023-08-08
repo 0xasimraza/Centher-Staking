@@ -93,6 +93,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -136,6 +137,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -182,6 +184,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -229,6 +232,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -261,6 +265,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -292,6 +297,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -323,6 +329,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -354,6 +361,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -386,6 +394,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -417,6 +426,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -448,6 +458,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -498,6 +509,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -557,6 +569,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -616,6 +629,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 false,
@@ -674,6 +688,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 false,
@@ -732,6 +747,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -783,6 +799,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -823,6 +840,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -875,6 +893,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -929,6 +948,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -983,6 +1003,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 100e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -1037,6 +1058,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -1104,6 +1126,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -1171,6 +1194,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -1237,6 +1261,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -1304,6 +1329,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -1365,6 +1391,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -1426,6 +1453,7 @@ contract CentherStakingTest is Test {
                 10 days,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -1487,6 +1515,7 @@ contract CentherStakingTest is Test {
                 10 days,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 true,
@@ -1555,6 +1584,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 false,
@@ -1617,6 +1647,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 false,
@@ -1678,6 +1709,7 @@ contract CentherStakingTest is Test {
                 10 days,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 false,
@@ -1739,6 +1771,7 @@ contract CentherStakingTest is Test {
                 10 days,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
                 false,
@@ -1807,6 +1840,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 false,
                 true,
@@ -1870,6 +1904,7 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 false,
                 true,
@@ -1935,9 +1970,11 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
-                true,true
+                true,
+                true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1998,9 +2035,11 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
-                true,true
+                true,
+                true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2062,9 +2101,11 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
-                false,true
+                false,
+                true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2124,9 +2165,11 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
-                false,true
+                false,
+                true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2187,9 +2230,11 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 10000e18,
                 100,
+                0,
                 "www.staking.com/1",
                 true,
-                true,true
+                true,
+                true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2253,9 +2298,11 @@ contract CentherStakingTest is Test {
                 1 weeks,
                 _stakeAmount + 1,
                 100,
+                0,
                 "www.staking.com/1",
                 false,
-                true,true
+                true,
+                true
             );
 
         staking.createPool{value: 0.00001 ether}(_info);
