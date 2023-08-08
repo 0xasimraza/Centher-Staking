@@ -102,8 +102,8 @@ contract CentherStaking is ICentherStaking {
             cancellationFees: _info.cancellationFees,
             isUnstakable: _info.isUnstakable,
             isLP: _info.isLP,
-            isActive: refMode == RefMode.NoReward ? true : false, //it stays false untill owner set affiliate settings
-            showOnCenther: _info.showOnCenther
+            isActive: refMode == RefMode.NoReward ? true : false //it stays false untill owner set affiliate settings
+            // showOnCenther: _info.showOnCenther
         });
 
         poolsInfo[newPoolId] = PoolInfo({
@@ -118,7 +118,9 @@ contract CentherStaking is ICentherStaking {
             annualStakingRewardRate: _info.annualStakingRewardRate,
             stakingDurationPeriod: _info.stakingDurationPeriod,
             claimDuration: _info.claimDuration,
-            setting: _setting
+            rate: _info.rate == 0 ? 1e18 : _info.rate,
+            setting: _setting,
+            showOnCenther: _info.showOnCenther
         });
 
         uint256 rewardAllowance = IERC20(poolsInfo[newPoolId].rewardToken)
@@ -197,7 +199,7 @@ contract CentherStaking is ICentherStaking {
 
         PoolInfo memory _poolInfo = poolsInfo[_poolId];
 
-        if (_poolInfo.setting.showOnCenther) {
+        if (_poolInfo.showOnCenther) {
             if (!(register.isRegistered(msg.sender))) {
                 revert NotRegistered();
             }
@@ -633,8 +635,10 @@ contract CentherStaking is ICentherStaking {
     ) internal view returns (uint256) {
         PoolInfo memory _poolInfo = poolsInfo[_poolId];
         return
-            (_amount * _poolInfo.annualStakingRewardRate * _duration) /
-            (10000 * _YEAR);
+            (_amount *
+                _poolInfo.annualStakingRewardRate *
+                _duration *
+                _poolInfo.rate) / (10000 * _YEAR * 1e18);
     }
 
     function _calcUserUnstakable(

@@ -54,6 +54,7 @@ interface ICentherStaking {
         uint256 firstReward;
         uint256 maxStakableAmount;
         uint256 cancellationFees;
+        uint256 rate;
         string poolMetadata;
         bool isUnstakable;
         bool isLP;
@@ -71,6 +72,8 @@ interface ICentherStaking {
         uint256 maxStakeAmount;
         RefMode rewardModeForRef;
         PoolSetting setting;
+        bool showOnCenther;
+        uint256 rate;
     }
 
     struct PoolSetting {
@@ -80,7 +83,6 @@ interface ICentherStaking {
         bool isUnstakable;
         bool isLP;
         bool isActive;
-        bool showOnCenther;
     }
 
     struct AffiliateSetting {
