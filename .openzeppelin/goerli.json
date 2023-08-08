@@ -951,6 +951,332 @@
           }
         }
       }
+    },
+    "076f02df7a187931d899234f24f02ff65f54fc8ccce804eeea011d1deac89c25": {
+      "address": "0xF46682465e7b5f87b68f0902563b758dc505A4D9",
+      "txHash": "0x7c2ef85a22b02b0fd5e35d117e3e26d515a237177871f8b9380eadd856505bb2",
+      "layout": {
+        "solcVersion": "0.8.13",
+        "storage": [
+          {
+            "label": "_unlocked",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "CentherStaking",
+            "src": "src/CentherStaking.sol:7"
+          },
+          {
+            "label": "register",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_contract(IRegistration)13252",
+            "contract": "CentherStaking",
+            "src": "src/CentherStaking.sol:17"
+          },
+          {
+            "label": "referralDeep",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "CentherStaking",
+            "src": "src/CentherStaking.sol:19"
+          },
+          {
+            "label": "platformFees",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256",
+            "contract": "CentherStaking",
+            "src": "src/CentherStaking.sol:20"
+          },
+          {
+            "label": "platform",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address",
+            "contract": "CentherStaking",
+            "src": "src/CentherStaking.sol:21"
+          },
+          {
+            "label": "poolIds",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256",
+            "contract": "CentherStaking",
+            "src": "src/CentherStaking.sol:23"
+          },
+          {
+            "label": "poolsInfo",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_uint256,t_struct(PoolInfo)13350_storage)",
+            "contract": "CentherStaking",
+            "src": "src/CentherStaking.sol:25"
+          },
+          {
+            "label": "affiliateSettings",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_mapping(t_uint256,t_array(t_struct(AffiliateSetting)13368_storage)dyn_storage)",
+            "contract": "CentherStaking",
+            "src": "src/CentherStaking.sol:26"
+          },
+          {
+            "label": "userStakes",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_array(t_struct(Stake)13392_storage)dyn_storage))",
+            "contract": "CentherStaking",
+            "src": "src/CentherStaking.sol:27"
+          },
+          {
+            "label": "userReferrer",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_uint256,t_mapping(t_address,t_address))",
+            "contract": "CentherStaking",
+            "src": "src/CentherStaking.sol:28"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_struct(AffiliateSetting)13368_storage)dyn_storage": {
+            "label": "struct ICentherStaking.AffiliateSetting[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_struct(Stake)13392_storage)dyn_storage": {
+            "label": "struct ICentherStaking.Stake[]",
+            "numberOfBytes": "32"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(IRegistration)13252": {
+            "label": "contract IRegistration",
+            "numberOfBytes": "20"
+          },
+          "t_enum(RefMode)13290": {
+            "label": "enum ICentherStaking.RefMode",
+            "members": [
+              "NoReward",
+              "FixedReward",
+              "TimeBasedReward"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_array(t_struct(Stake)13392_storage)dyn_storage)": {
+            "label": "mapping(address => struct ICentherStaking.Stake[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_array(t_struct(AffiliateSetting)13368_storage)dyn_storage)": {
+            "label": "mapping(uint256 => struct ICentherStaking.AffiliateSetting[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_address,t_address))": {
+            "label": "mapping(uint256 => mapping(address => address))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_address,t_array(t_struct(Stake)13392_storage)dyn_storage))": {
+            "label": "mapping(uint256 => mapping(address => struct ICentherStaking.Stake[]))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(PoolInfo)13350_storage)": {
+            "label": "mapping(uint256 => struct ICentherStaking.PoolInfo)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AffiliateSetting)13368_storage": {
+            "label": "struct ICentherStaking.AffiliateSetting",
+            "members": [
+              {
+                "label": "level",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "percent",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(PoolInfo)13350_storage": {
+            "label": "struct ICentherStaking.PoolInfo",
+            "members": [
+              {
+                "label": "poolOwner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "stakeToken",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "rewardToken",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "annualStakingRewardRate",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "stakingDurationPeriod",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "claimDuration",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "minStakeAmount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "maxStakeAmount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "rewardModeForRef",
+                "type": "t_enum(RefMode)13290",
+                "offset": 0,
+                "slot": "8"
+              },
+              {
+                "label": "setting",
+                "type": "t_struct(PoolSetting)13363_storage",
+                "offset": 0,
+                "slot": "9"
+              },
+              {
+                "label": "showOnCenther",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "13"
+              },
+              {
+                "label": "rate",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "14"
+              }
+            ],
+            "numberOfBytes": "480"
+          },
+          "t_struct(PoolSetting)13363_storage": {
+            "label": "struct ICentherStaking.PoolSetting",
+            "members": [
+              {
+                "label": "firstRewardDuration",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "maxStakableAmount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "cancellationFees",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "isUnstakable",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "isLP",
+                "type": "t_bool",
+                "offset": 1,
+                "slot": "3"
+              },
+              {
+                "label": "isActive",
+                "type": "t_bool",
+                "offset": 2,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(Stake)13392_storage": {
+            "label": "struct ICentherStaking.Stake",
+            "members": [
+              {
+                "label": "stakingDuration",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "stakedAmount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "stakedTime",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "lastRewardClaimed",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "claimedReward",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
     }
   }
 }
