@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import "./interfaces/ICentherStaking.sol";
-import "forge-std/console2.sol";
 
 contract CentherStaking is ICentherStaking {
     uint8 private _unlocked;
@@ -211,11 +210,6 @@ contract CentherStaking is ICentherStaking {
                 revert NotRegistered();
             }
         }
-
-        console2.log("_info.startTime", _poolInfo.startTime);
-        console2.log("currentTime: ", block.timestamp);
-
-        console2.log("status: ", _poolInfo.startTime < block.timestamp);
 
         if (_poolInfo.startTime > block.timestamp) {
             revert PoolStakingNotStarted();
