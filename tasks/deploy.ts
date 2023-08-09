@@ -31,7 +31,7 @@ export default async function deploy(
   // console.log("Deployed Address", instance.target);
 
   // Upgrading
-  const CentherStakingV2 = await ethers.getContractFactory("CentherStaking");
+  // const CentherStakingV2 = await ethers.getContractFactory("CentherStaking");
   const UPGRADEABLE_PROXY = "0x64b7DdFEc24a10B071B26315aA4E183e6Ae2Fd89";
   const upgraded = await upgrades.upgradeProxy(
     UPGRADEABLE_PROXY,
@@ -42,21 +42,20 @@ export default async function deploy(
 
   if (hre.network.name != "hardhat") {
     await hre.run("verify:verify", {
-      address: upgraded.target,
+      address: "0xf692435e9aA294A49834Fd29d245cF04d97d97f8", //upgraded.target,
       constructorArguments: [],
     });
   }
 
   // for simple deployment
-
-  // const instance = await CentherStaking.deploy(args[0],args[1])
-  //  await instance.waitForDeployment();
-  //  await delay(26000);
-  //  console.log("Deployed Address", instance.target);
+  // const instance = await CentherStaking.deploy(args[0], args[1]);
+  // await instance.waitForDeployment();
+  // await delay(26000);
+  // console.log("Deployed Address", instance.target);
 
   // if (hre.network.name != "hardhat") {
   //   await hre.run("verify:verify", {
-  //     address: "0xaDD719301F34945d13f3E667A8d095664E90cA9d",
+  //     address: instance.target,
   //     constructorArguments: args,
   //   });
   // }
