@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "./interfaces/ICentherStaking.sol";
+import "forge-std/console2.sol";
 
 contract CentherStaking is ICentherStaking {
     uint8 private _unlocked;
@@ -68,7 +69,7 @@ contract CentherStaking is ICentherStaking {
     // main functions:
     function createPool(
         PoolCreationInputs calldata _info
-    ) external payable override onlyRegisterUser {
+    ) external payable override onlyRegisterUser returns (uint256 newPoolId) {
         if (_info.stakeToken == address(0)) {
             revert InvalidTokenAddress();
         }
@@ -80,9 +81,6 @@ contract CentherStaking is ICentherStaking {
             revert InvalidRewardRate();
         }
 
-        poolIds++;
-        uint256 newPoolId = poolIds;
-
         if (_info.showOnCenther) {
             if (msg.value < platformFees) {
                 revert ValueNotEqualToPlatformFees();
@@ -93,6 +91,13 @@ contract CentherStaking is ICentherStaking {
         if (_info.rewardModeForRef >= 3) {
             revert InvalidRewardMode();
         }
+
+        if (_info.startTime < block.timestamp) {
+            revert InvalidStartTime();
+        }
+
+        poolIds++;
+        newPoolId = poolIds;
 
         RefMode refMode = RefMode(_info.rewardModeForRef);
 
@@ -120,7 +125,9 @@ contract CentherStaking is ICentherStaking {
             claimDuration: _info.claimDuration,
             rate: _info.rate == 0 ? 1e18 : _info.rate,
             setting: _setting,
-            showOnCenther: _info.showOnCenther
+            showOnCenther: _info.showOnCenther,
+            name: _info.name,
+            startTime: _info.startTime
         });
 
         uint256 rewardAllowance = IERC20(poolsInfo[newPoolId].rewardToken)
@@ -203,6 +210,15 @@ contract CentherStaking is ICentherStaking {
             if (!(register.isRegistered(msg.sender))) {
                 revert NotRegistered();
             }
+        }
+
+        console2.log("_info.startTime", _poolInfo.startTime);
+        console2.log("currentTime: ", block.timestamp);
+
+        console2.log("status: ", _poolInfo.startTime < block.timestamp);
+
+        if (_poolInfo.startTime > block.timestamp) {
+            revert PoolStakingNotStarted();
         }
 
         if (!_poolInfo.setting.isActive) {
@@ -320,7 +336,7 @@ contract CentherStaking is ICentherStaking {
             }
         }
 
-        emit AmountStaked(_poolId, msg.sender, _amount);
+        emit AmountStaked(_poolId, msg.sender, _amount, referrer);
     }
 
     function unstake(

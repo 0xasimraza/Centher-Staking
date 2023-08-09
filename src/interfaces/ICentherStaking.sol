@@ -13,11 +13,13 @@ interface ICentherStaking {
     error NotRegistered();
     error PoolNotActive();
     error AlreadySetted();
+    error InvalidStartTime();
     error NotValidReferral();
     error InvalidRewardMode();
     error InvalidRewardRate();
     error InvalidStakeAmount();
     error InvalidTokenAddress();
+    error PoolStakingNotStarted();
     error OnlyPoolOwnerCanAccess();
     error MaxStakableAmountReached();
     error PoolRefModeIsNotTimeBased();
@@ -26,16 +28,6 @@ interface ICentherStaking {
     error GiveMaxAllowanceOfRewardToken();
     error CannotSetAffiliateSettingForActivePool();
 
-    // enum ClaimDuration {
-    //     Hourly,
-    //     Daily,
-    //     Weekly,
-    //     Monthly,
-    //     Quarterly,
-    //     HalfYearly,
-    //     Yearly
-    // }
-
     enum RefMode {
         NoReward,
         FixedReward,
@@ -43,6 +35,8 @@ interface ICentherStaking {
     }
 
     struct PoolCreationInputs {
+        string name;
+        uint256 startTime;
         address stakeToken;
         address rewardToken;
         uint256 annualStakingRewardRate;
@@ -74,6 +68,8 @@ interface ICentherStaking {
         PoolSetting setting;
         bool showOnCenther;
         uint256 rate;
+        string name;
+        uint256 startTime;
     }
 
     struct PoolSetting {
@@ -113,7 +109,12 @@ interface ICentherStaking {
         uint256 platformFees,
         string metadataUri
     );
-    event AmountStaked(uint256 poolId, address user, uint256 amount);
+    event AmountStaked(
+        uint256 poolId,
+        address user,
+        uint256 amount,
+        address referrer
+    );
     event AmountUnstaked(
         uint256 poolId,
         address user,
@@ -130,7 +131,9 @@ interface ICentherStaking {
         address referrer
     );
 
-    function createPool(PoolCreationInputs calldata _info) external payable;
+    function createPool(
+        PoolCreationInputs calldata _info
+    ) external payable returns (uint256);
 
     function stake(uint256 _poolId, uint256 _amount, address referrer) external;
 
