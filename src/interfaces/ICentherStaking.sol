@@ -59,17 +59,15 @@ interface ICentherStaking {
         address poolOwner;
         address stakeToken;
         address rewardToken;
+        uint256 rate;
         uint256 annualStakingRewardRate;
+        uint256 startTime;
         uint256 stakingDurationPeriod;
         uint256 claimDuration;
         uint256 minStakeAmount;
         uint256 maxStakeAmount;
         RefMode rewardModeForRef;
         PoolSetting setting;
-        bool showOnCenther;
-        uint256 rate;
-        string name;
-        uint256 startTime;
     }
 
     struct PoolSetting {
@@ -79,6 +77,7 @@ interface ICentherStaking {
         bool isUnstakable;
         bool isLP;
         bool isActive;
+        bool showOnCenther;
     }
 
     struct AffiliateSetting {
@@ -103,37 +102,15 @@ interface ICentherStaking {
         uint256 claimedReward;
     }
 
-    event StakingPoolCreated(
-        uint256 poolId,
-        PoolInfo poolInfo,
-        uint256 platformFees,
-        string metadataUri
-    );
-    event AmountStaked(
-        uint256 poolId,
-        address user,
-        uint256 amount,
-        address referrer
-    );
-    event AmountUnstaked(
-        uint256 poolId,
-        address user,
-        uint256 amount,
-        uint256 cancellationFees
-    );
+    event PoolCreated(uint256 poolId, PoolInfo poolInfo, uint256 platformFees, string name, string metadataUri);
+    event AmountStaked(uint256 poolId, address user, uint256 amount, address referrer);
+    event AmountUnstaked(uint256 poolId, address user, uint256 amount, uint256 cancellationFees);
     event RewardClaimed(uint256 poolId, address user, uint256 amount);
-    event AffiliateSettingSet(uint256, AffiliateSetting[] affiliateSetting);
+    event AffiliateSettingSet(uint256, AffiliateSetting[] affiliateSetting, bool isActive);
     event PoolStateChanged(uint256 poolId, bool poolState);
-    event RefRewardPaid(
-        uint256 poolId,
-        address staker,
-        uint256 reward,
-        address referrer
-    );
+    event RefRewardPaid(uint256 poolId, address staker, uint256 reward, address referrer);
 
-    function createPool(
-        PoolCreationInputs calldata _info
-    ) external payable returns (uint256);
+    function createPool(PoolCreationInputs calldata _info) external payable returns (uint256);
 
     function stake(uint256 _poolId, uint256 _amount, address referrer) external;
 

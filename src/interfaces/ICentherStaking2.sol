@@ -34,13 +34,7 @@ interface ICentherStaking {
     event AmountStaked(uint256 poolId, address user, uint256 amount);
     event AmountUnstaked(uint256 poolId, address user, uint256 amount);
     event RewardClaimed(uint256 poolId, address user, uint256 amount);
-    event ReferralRewardTransfer(
-        uint256 poolId,
-        address rewardToken,
-        address user,
-        address refferer,
-        uint256 amount
-    );
+    event ReferralRewardTransfer(uint256 poolId, address rewardToken, address user, address refferer, uint256 amount);
 
     enum ClaimDuration {
         Hourly,
@@ -128,10 +122,7 @@ interface ICentherStaking {
         uint256 claimedReward;
     }
 
-    function createPool(
-        PoolCreationInputs calldata info,
-        uint256[] memory _settings
-    ) external payable;
+    function createPool(PoolCreationInputs calldata info, uint256[] memory _settings) external payable;
 
     function stake(uint256 poolId, uint256 amount, address referral) external;
 

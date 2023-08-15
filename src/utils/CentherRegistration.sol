@@ -15,16 +15,8 @@ contract CentherRegistration is Ownable {
     uint8 public constant referralDeep = 6;
 
     event RegisterWithoutReferrer(address indexed user, uint256 paidAmount);
-    event RegisterWithReferrer(
-        address indexed user,
-        uint256 paidAmount,
-        address indexed referrer
-    );
-    event SetReferrer(
-        address indexed referrer,
-        address indexed user,
-        uint8 level
-    );
+    event RegisterWithReferrer(address indexed user, uint256 paidAmount, address indexed referrer);
+    event SetReferrer(address indexed referrer, address indexed user, uint8 level);
 
     bool public _pause;
 
@@ -47,15 +39,9 @@ contract CentherRegistration is Ownable {
 
     function registerWithoutReferrer() external payable {
         require(!_pause, "registration_paused");
-        require(
-            msg.value >= registrationFeeWithoutReferrer,
-            "insufficient_funds"
-        );
+        require(msg.value >= registrationFeeWithoutReferrer, "insufficient_funds");
 
-        require(
-            !isUserRegisteredWithAddress[msg.sender],
-            "user_already_registered"
-        );
+        require(!isUserRegisteredWithAddress[msg.sender], "user_already_registered");
 
         isUserRegisteredWithAddress[msg.sender] = true;
 
@@ -66,14 +52,8 @@ contract CentherRegistration is Ownable {
         require(!_pause, "registration_paused");
         require(msg.value >= registrationFeeWithReferrer, "insufficient_funds");
 
-        require(
-            !isUserRegisteredWithAddress[msg.sender],
-            "user_already_registered"
-        );
-        require(
-            isUserRegisteredWithAddress[referrerAddress],
-            "referrer_not_registered"
-        );
+        require(!isUserRegisteredWithAddress[msg.sender], "user_already_registered");
+        require(isUserRegisteredWithAddress[referrerAddress], "referrer_not_registered");
 
         isUserRegisteredWithAddress[msg.sender] = true;
         userAddressToReferrerAddress[msg.sender] = referrerAddress;
@@ -100,10 +80,7 @@ contract CentherRegistration is Ownable {
         if (referrerAddress == address(0)) {
             emit RegisterWithoutReferrer(user, 0);
         } else {
-            require(
-                isUserRegisteredWithAddress[referrerAddress],
-                "referrer_not_registered"
-            );
+            require(isUserRegisteredWithAddress[referrerAddress], "referrer_not_registered");
             userAddressToReferrerAddress[user] = referrerAddress;
             address referrer = user;
             for (uint8 i = 0; i < referralDeep; i++) {
@@ -119,24 +96,15 @@ contract CentherRegistration is Ownable {
     }
 
     // Register multiple users with multiple referrers
-    function registerForOwnerBatch(
-        address[] calldata users,
-        address[] calldata referrerAddresses
-    ) external {
+    function registerForOwnerBatch(address[] calldata users, address[] calldata referrerAddresses) external {
         require(!_pause, "registration_paused");
         require(msg.sender == operator, "caller_is_not_operator.");
-        require(
-            users.length == referrerAddresses.length,
-            "users_and_referrers_length_not_match"
-        );
+        require(users.length == referrerAddresses.length, "users_and_referrers_length_not_match");
 
         for (uint256 i = 0; i < users.length; i++) {
             address user = users[i];
             address referrerAddress = referrerAddresses[i];
-            require(
-                !isUserRegisteredWithAddress[user],
-                "user_already_registered"
-            );
+            require(!isUserRegisteredWithAddress[user], "user_already_registered");
             isUserRegisteredWithAddress[user] = true;
 
             if (referrerAddress == address(0)) {
@@ -151,9 +119,7 @@ contract CentherRegistration is Ownable {
                 userAddressToReferrerAddress[user] = referrerAddress;
                 address referrer = user;
                 for (uint8 j = 0; j < referralDeep; j++) {
-                    address aboveReferrer = userAddressToReferrerAddress[
-                        referrer
-                    ];
+                    address aboveReferrer = userAddressToReferrerAddress[referrer];
                     if (aboveReferrer == address(0)) {
                         break;
                     }
@@ -178,10 +144,7 @@ contract CentherRegistration is Ownable {
         payable(msg.sender).transfer(address(this).balance);
     }
 
-    function changeFees(
-        uint256 feeWithoutReferrer,
-        uint256 feeWithReferrer
-    ) public onlyOwner {
+    function changeFees(uint256 feeWithoutReferrer, uint256 feeWithReferrer) public onlyOwner {
         registrationFeeWithoutReferrer = feeWithoutReferrer;
         registrationFeeWithReferrer = feeWithReferrer;
     }
@@ -190,9 +153,7 @@ contract CentherRegistration is Ownable {
         return isUserRegisteredWithAddress[_user];
     }
 
-    function getReferrerAddresses(
-        address _userAddress
-    ) external view returns (address[] memory referrerAddresses) {
+    function getReferrerAddresses(address _userAddress) external view returns (address[] memory referrerAddresses) {
         address userAddress = _userAddress;
 
         referrerAddresses = new address[](referralDeep);
