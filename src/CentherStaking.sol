@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import "./interfaces/ICentherStaking.sol";
-import "forge-std/console2.sol";
 
 /// @title Centher Staking as a service
 /// @notice Users can launch their staking projects
@@ -52,22 +51,22 @@ contract CentherStaking is ICentherStaking {
         _unlocked = 1;
     }
 
-    constructor(address _registration, address _platform) {
-        register = IRegistration(_registration);
-        platform = _platform;
-        _unlocked = 1;
-        platformFees = 0.00001 ether;
-        referralDeep = 6;
-    }
-
-    //uncomment before deployment
-    // function initialize(address _registration, address _platform) public {
+    // constructor(address _registration, address _platform) {
     //     register = IRegistration(_registration);
     //     platform = _platform;
     //     _unlocked = 1;
     //     platformFees = 0.00001 ether;
     //     referralDeep = 6;
     // }
+
+    //uncomment before deployment
+    function initialize(address _registration, address _platform) public {
+        register = IRegistration(_registration);
+        platform = _platform;
+        _unlocked = 1;
+        platformFees = 0.00001 ether;
+        referralDeep = 6;
+    }
 
     ///@inheritdoc ICentherStaking
     function createPool(PoolCreationInputs calldata _info)
