@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "./interfaces/ICentherStaking.sol";
+import "forge-std/console2.sol";
 
 /// @title Centher Staking as a service
 /// @notice Users can launch their staking projects
@@ -19,7 +20,7 @@ contract CentherStaking is ICentherStaking {
 
     IRegistration public register;
 
-    uint256 immutable _referralDeep;
+    uint256 referralDeep;
     uint256 public platformFees;
     address public platform;
 
@@ -56,7 +57,7 @@ contract CentherStaking is ICentherStaking {
         platform = _platform;
         _unlocked = 1;
         platformFees = 0.00001 ether;
-        _referralDeep = 6;
+        referralDeep = 6;
     }
 
     //uncomment before deployment
@@ -65,7 +66,7 @@ contract CentherStaking is ICentherStaking {
     //     platform = _platform;
     //     _unlocked = 1;
     //     platformFees = 0.00001 ether;
-    //     _referralDeep = 6;
+    //     referralDeep = 6;
     // }
 
     ///@inheritdoc ICentherStaking
@@ -361,9 +362,11 @@ contract CentherStaking is ICentherStaking {
                     userStakes[_poolId][msg.sender][i].stakedAmount = 0;
                 }
             }
+            unchecked {
+                extraSlot = (amountToCancel * poolsInfo[_poolId].setting.cancellationFees) / 10000;
+                sendingAmountToStaker = _amount - extraSlot;
+            }
 
-            extraSlot = (amountToCancel * poolsInfo[_poolId].setting.cancellationFees) / 10000;
-            sendingAmountToStaker = _amount - extraSlot;
             sendingAmountToOwner += refundRefReward;
         } else {
             sendingAmountToStaker = _amount;
@@ -395,14 +398,17 @@ contract CentherStaking is ICentherStaking {
     function claimReward(uint256 _poolId) external override {
         PoolInfo memory _poolInfo = poolsInfo[_poolId];
         Stake[] memory _stakes = userStakes[_poolId][msg.sender];
+        uint256 passdTime;
         uint256 _claimableReward;
 
         for (uint256 i; i < _stakes.length; i++) {
-            uint256 passdTime = block.timestamp - _stakes[i].lastRewardClaimed;
+            unchecked {
+                passdTime = block.timestamp - _stakes[i].lastRewardClaimed;
 
-            passdTime = block.timestamp + passdTime > _stakes[i].stakingDuration
-                ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
-                : passdTime;
+                passdTime = block.timestamp + passdTime > _stakes[i].stakingDuration
+                    ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
+                    : passdTime;
+            }
 
             if (passdTime >= _poolInfo.claimDuration) {
                 uint256 reward = _calcReward(_poolId, passdTime, _stakes[i].stakedAmount);
@@ -437,6 +443,7 @@ contract CentherStaking is ICentherStaking {
     ///@inheritdoc ICentherStaking
     function claimRewardForRef(uint256 _poolId, address _user) external override {
         PoolInfo memory poolInfo = poolsInfo[_poolId];
+        uint256 passdTime;
         if (poolInfo.rewardModeForRef != RefMode.TimeBasedReward) {
             revert PoolRefModeIsNotTimeBased();
         }
@@ -466,11 +473,13 @@ contract CentherStaking is ICentherStaking {
         Stake[] memory _stakes = userStakes[_poolId][referrer];
 
         for (uint256 i; i < _stakes.length; i++) {
-            uint256 passdTime = block.timestamp - _stakes[i].lastRewardClaimed;
+            unchecked {
+                passdTime = block.timestamp - _stakes[i].lastRewardClaimed;
 
-            passdTime = block.timestamp + passdTime > _stakes[i].stakingDuration
-                ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
-                : passdTime;
+                passdTime = block.timestamp + passdTime > _stakes[i].stakingDuration
+                    ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
+                    : passdTime;
+            }
             if (passdTime > _MONTH) {
                 unchecked {
                     reward = (_stakes[i].stakedAmount * (passdTime) * percent) / (_MONTH * 10000);
@@ -501,10 +510,10 @@ contract CentherStaking is ICentherStaking {
         )
     {
         (totalClaimableReward, totalStakeAmount) = _calculateClaimableReward(poolId, user);
-
-        totalReward =
-            (totalStakeAmount * poolsInfo[poolId].annualStakingRewardRate * poolsInfo[poolId].rate) / (10000 * 1e18);
-
+        unchecked {
+            totalReward =
+                (totalStakeAmount * poolsInfo[poolId].annualStakingRewardRate * poolsInfo[poolId].rate) / (10000 * 1e18);
+        }
         totolUnclaimableReward = totalReward - totalClaimableReward;
     }
 
@@ -538,13 +547,15 @@ contract CentherStaking is ICentherStaking {
 
         uint256 percent = affilateSetting[levels].percent;
         Stake[] memory _stakes = userStakes[_poolId][referrer];
-
+        uint256 passdTime;
         for (uint256 i; i < _stakes.length; i++) {
-            uint256 passdTime = block.timestamp - _stakes[i].lastRewardClaimed;
+            unchecked {
+                passdTime = block.timestamp - _stakes[i].lastRewardClaimed;
 
-            passdTime = block.timestamp + passdTime > _stakes[i].stakingDuration
-                ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
-                : passdTime;
+                passdTime = block.timestamp + passdTime > _stakes[i].stakingDuration
+                    ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
+                    : passdTime;
+            }
             if (passdTime > _MONTH) {
                 unchecked {
                     claimableReward += (_stakes[i].stakedAmount * (passdTime) * percent) / (_MONTH * 10000);
@@ -553,9 +564,11 @@ contract CentherStaking is ICentherStaking {
         }
     }
 
-    function _calcReward(uint256 _poolId, uint256 _duration, uint256 _amount) internal view returns (uint256) {
+    function _calcReward(uint256 _poolId, uint256 _duration, uint256 _amount) internal view returns (uint256 reward) {
         PoolInfo memory _poolInfo = poolsInfo[_poolId];
-        return (_amount * _poolInfo.annualStakingRewardRate * _duration * _poolInfo.rate) / (10000 * _YEAR * 1e18);
+        unchecked {
+            reward = (_amount * _poolInfo.annualStakingRewardRate * _duration * _poolInfo.rate) / (10000 * _YEAR * 1e18);
+        }
     }
 
     function _calculateClaimableReward(uint256 _poolId, address _user)
@@ -565,15 +578,18 @@ contract CentherStaking is ICentherStaking {
     {
         PoolInfo memory _poolInfo = poolsInfo[_poolId];
         Stake[] memory _stakes = userStakes[_poolId][_user];
+        uint256 passdTime;
 
         for (uint256 i; i < _stakes.length; i++) {
             totalStakedAmount += _stakes[i].stakedAmount;
 
-            uint256 passdTime = block.timestamp - _stakes[i].lastRewardClaimed;
+            unchecked {
+                passdTime = block.timestamp - _stakes[i].lastRewardClaimed;
 
-            passdTime = block.timestamp + passdTime > _stakes[i].stakingDuration
-                ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
-                : passdTime;
+                passdTime = block.timestamp + passdTime > _stakes[i].stakingDuration
+                    ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
+                    : passdTime;
+            }
 
             if (passdTime >= _poolInfo.claimDuration) {
                 uint256 reward = _calcReward(_poolId, passdTime, _stakes[i].stakedAmount);
@@ -628,9 +644,9 @@ contract CentherStaking is ICentherStaking {
         returns (address[] memory referrerAddresses)
     {
         address userAddress = _user;
-        referrerAddresses = new address[](_referralDeep);
+        referrerAddresses = new address[](referralDeep);
 
-        for (uint8 i; i < _referralDeep; i++) {
+        for (uint8 i; i < referralDeep; i++) {
             address referrerAddress = userReferrer[_poolId][userAddress];
             referrerAddresses[i] = referrerAddress;
             userAddress = referrerAddress;
@@ -645,12 +661,15 @@ contract CentherStaking is ICentherStaking {
     {
         PoolInfo memory _poolInfo = poolsInfo[_poolId];
         Stake memory _stakes = userStakes[_poolId][_user][i];
+        uint256 passdTime;
 
-        uint256 passdTime = block.timestamp - _stakes.lastRewardClaimed;
+        unchecked {
+            passdTime = block.timestamp - _stakes.lastRewardClaimed;
 
-        passdTime = block.timestamp + passdTime > _stakes.stakingDuration
-            ? _stakes.stakingDuration - _stakes.lastRewardClaimed
-            : passdTime;
+            passdTime = block.timestamp + passdTime > _stakes.stakingDuration
+                ? _stakes.stakingDuration - _stakes.lastRewardClaimed
+                : passdTime;
+        }
 
         if (passdTime >= _poolInfo.claimDuration) {
             uint256 reward = _calcReward(_poolId, passdTime, cancelStake);
