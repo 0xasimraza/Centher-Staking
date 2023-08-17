@@ -96,13 +96,13 @@ interface ICentherStaking {
     /// @param user a parameter, depositor address
     /// @param amount a parameter, stake amount
     /// @param referrer a parameter, referrer address
-    event AmountStaked(uint256 poolId, address user, uint256 amount, address referrer);
+    event AmountStaked(uint256 poolId, address user, uint256 amount, address referrer, uint256 topupRewardAmount);
 
     /// @notice AmountUnstaked event which contains user unstake details
     /// @param poolId a parameter, unstake amount on this pool Id
     /// @param user a parameter, withdrawer address
     /// @param amount a parameter, unstake amount
-    event AmountUnstaked(uint256 poolId, address user, uint256 amount, uint256 cancellationFees);
+    event AmountUnstaked(uint256 poolId, address user, uint256 amount, uint256 cancellationFees, uint256 refundToOwner);
 
     /// @notice RewardClaimed event which contains user claimed reward details
     /// @param poolId a parameter, claimed amount on this pool Id

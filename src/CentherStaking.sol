@@ -183,6 +183,7 @@ contract CentherStaking is ICentherStaking {
         }
 
         PoolInfo memory _poolInfo = poolsInfo[_poolId];
+        uint256 totalReward;
 
         if (_poolInfo.setting.showOnCenther) {
             if (!(register.isRegistered(msg.sender))) {
@@ -227,7 +228,7 @@ contract CentherStaking is ICentherStaking {
         userReferrer[_poolId][msg.sender] = referrer;
 
         if (_poolInfo.setting.isLP) {
-            uint256 totalReward = _calcReward(_poolId, _poolInfo.stakingDurationPeriod, _amount);
+            totalReward = _calcReward(_poolId, _poolInfo.stakingDurationPeriod, _amount);
 
             if (_poolInfo.rewardModeForRef == RefMode.TimeBasedReward) {
                 address[] memory referrers = _getReferrerAddresses(_poolId, msg.sender);
@@ -267,7 +268,7 @@ contract CentherStaking is ICentherStaking {
             }
         }
 
-        emit AmountStaked(_poolId, msg.sender, _amount, referrer);
+        emit AmountStaked(_poolId, msg.sender, _amount, referrer, totalReward);
     }
 
     ///@inheritdoc ICentherStaking
@@ -317,8 +318,6 @@ contract CentherStaking is ICentherStaking {
             AffiliateSetting[] memory levelsInfo = affiliateSettings[_poolId];
 
             for (uint256 i; i < stakes.length; i++) {
-                // sendingAmountToOwner += _returnRewardAmountToOwner(_poolId, msg.sender,stakes[i].stakedAmount, i);
-
                 if (stakes[i].stakedAmount >= remainedToCancel) {
                     sendingAmountToOwner += _returnRewardAmountToOwner(_poolId, msg.sender, remainedToCancel, i);
 
@@ -389,7 +388,7 @@ contract CentherStaking is ICentherStaking {
             );
         }
 
-        emit AmountUnstaked(_poolId, msg.sender, _amount, extraSlot);
+        emit AmountUnstaked(_poolId, msg.sender, _amount, extraSlot, sendingAmountToOwner);
     }
 
     ///@inheritdoc ICentherStaking
