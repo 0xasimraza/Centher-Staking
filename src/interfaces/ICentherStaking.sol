@@ -139,6 +139,7 @@ interface ICentherStaking {
     error InvalidRewardMode();
     error InvalidRewardRate();
     error InvalidStakeAmount();
+    error InvalidMaxStakableAmount();
     error InvalidTokenAddress();
     error PoolStakingNotStarted();
     error OnlyPoolOwnerCanAccess();

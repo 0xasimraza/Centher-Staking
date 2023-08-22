@@ -99,6 +99,12 @@ contract CentherStaking is ICentherStaking {
             revert InvalidStartTime();
         }
 
+        if (_info.isLP) {
+            if (_info.maxStakableAmount < 0) {
+                revert InvalidMaxStakableAmount();
+            }
+        }
+
         poolIds++;
         newPoolId = poolIds;
 
@@ -211,8 +217,10 @@ contract CentherStaking is ICentherStaking {
             revert InvalidStakeAmount();
         }
 
-        if (_poolInfo.setting.maxStakableAmount < _amount) {
-            revert MaxStakableAmountReached();
+        if (_poolInfo.setting.isLP) {
+            if (_poolInfo.setting.maxStakableAmount < _amount) {
+                revert MaxStakableAmountReached();
+            }
         }
 
         address poolOwner = _poolInfo.poolOwner;
@@ -512,8 +520,8 @@ contract CentherStaking is ICentherStaking {
         unchecked {
             totalReward =
                 (totalStakeAmount * poolsInfo[poolId].annualStakingRewardRate * poolsInfo[poolId].rate) / (10000 * 1e18);
+            totolUnclaimableReward = totalReward - totalClaimableReward;
         }
-        totolUnclaimableReward = totalReward - totalClaimableReward;
     }
 
     function calculateClaimableRewardForRef(uint256 _poolId, address _user)
