@@ -136,12 +136,12 @@ contract CentherStaking is ICentherStaking {
             startTime: _info.startTime
         });
 
-        // uint256 rewardAllowance = IERC20(poolsInfo[newPoolId].rewardToken)
-        //     .allowance(msg.sender, address(this));
+        uint256 rewardAllowance = IERC20(poolsInfo[newPoolId].rewardToken)
+            .allowance(msg.sender, address(this));
 
-        // if (rewardAllowance != type(uint256).max) {
-        //     revert GiveMaxAllowanceOfRewardToken();
-        // }
+        if (rewardAllowance != type(uint256).max) {
+            revert GiveMaxAllowanceOfRewardToken();
+        }
 
         emit PoolCreated(
             newPoolId,
@@ -614,9 +614,7 @@ contract CentherStaking is ICentherStaking {
             if (referrer == msg.sender) {
                 levels = i;
             } else {
-                if (referrer != address(0)) {
-                    referrer = userReferrer[_poolId][_user];
-                }
+                referrer = userReferrer[_poolId][_user];
             }
         }
 
