@@ -128,22 +128,8 @@ contract CentherStaking is ICentherStaking {
 
         uint256 rewardAllowance = IERC20(poolsInfo[newPoolId].rewardToken).allowance(msg.sender, address(this));
 
-        if (_info.isLP) {
-            if (rewardAllowance != type(uint256).max) {
-                revert GiveMaxAllowanceOfRewardToken();
-            }
-        } else {
-            uint256 stakeTknAllowance = IERC20(poolsInfo[newPoolId].stakeToken).allowance(msg.sender, address(this));
-
-            if (stakeTknAllowance != type(uint256).max) {
-                revert GiveMaxAllowanceOfStakeToken();
-            }
-
-            if (poolsInfo[newPoolId].stakeToken != poolsInfo[newPoolId].rewardToken) {
-                if (rewardAllowance != type(uint256).max) {
-                    revert GiveMaxAllowanceOfRewardToken();
-                }
-            }
+        if (rewardAllowance != type(uint256).max) {
+            revert GiveMaxAllowanceOfRewardToken();
         }
 
         emit PoolCreated(newPoolId, poolsInfo[newPoolId], msg.value, _info.name, _info.poolMetadata);
@@ -585,7 +571,6 @@ contract CentherStaking is ICentherStaking {
         AffiliateSetting[] memory affilateSetting = affiliateSettings[_poolId];
 
         address referrer = userReferrer[_poolId][_user];
-
         uint256 levels = type(uint256).max;
 
         uint256 totalReward;
