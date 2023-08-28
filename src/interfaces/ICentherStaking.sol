@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface IRegistration {
     function isRegistered(address _user) external view returns (bool);
+    function isCitizen(address _user) external view returns (uint256);
 }
 
 /// @title The interface for the Centher Staking
@@ -110,7 +111,8 @@ interface ICentherStaking {
     /// @param poolId a parameter, claimed amount on this pool Id
     /// @param user a parameter, claimer address
     /// @param amount a parameter, claimed reward amount
-    event RewardClaimed(uint256 poolId, address user, uint256 amount);
+    /// @param isRef a parameter, is reward claimer refferer or main user
+    event RewardClaimed(uint256 poolId, address user, uint256 amount, bool isRef);
 
     /// @notice AffiliateSettingSet event which contains affiliateSetting details on specific pool Id
     /// @param affiliateSetting a parameter, affiliate setting details about level and its percentages
@@ -129,7 +131,14 @@ interface ICentherStaking {
     /// @param referrer a parameter, referrer address
     event RefRewardPaid(uint256 poolId, address staker, uint256 reward, address referrer);
 
+    /// @notice PlatformFeesUpdated event which emit platform old and new fees
+    /// @param oldFees a parameter, old platform fees
+    /// @param updatedFees a parameter, new platform fees
+    event PlatformFeesUpdated(uint256 oldFees, uint256 updatedFees);
+
     error Locked();
+    error OnlyOwner();
+    error NotCitizen();
     error PoolNotExist();
     error NotRegistered();
     error PoolNotActive();
@@ -139,14 +148,18 @@ interface ICentherStaking {
     error InvalidRewardMode();
     error InvalidRewardRate();
     error InvalidStakeAmount();
-    error InvalidMaxStakableAmount();
+    error UserNotEnoughStake();
     error InvalidTokenAddress();
+    error InvalidUnstakeAmount();
     error PoolStakingNotStarted();
     error OnlyPoolOwnerCanAccess();
+    error InvalidMaxStakableAmount();
     error MaxStakableAmountReached();
+    error PoolNotEligibleForRestake();
     error PoolRefModeIsNotTimeBased();
     error PoolOwnerNotEligibleToStake();
     error ValueNotEqualToPlatformFees();
+    error GiveMaxAllowanceOfStakeToken();
     error GiveMaxAllowanceOfRewardToken();
     error CannotSetAffiliateSettingForActivePool();
 
@@ -168,6 +181,11 @@ interface ICentherStaking {
     /// @param _amount a parameter , pass stake amount to deposit in the desired pool
     /// @param referrer a parameter, pass referrer address
     function stake(uint256 _poolId, uint256 _amount, address referrer) external;
+
+    /// @notice Restake claimable reward amount in specific pool
+    /// @dev In referrer params, pass either address of referrer (exist staker of centher staking) or address zero
+    /// @param _poolId a parameter, pass pool Id to stake amount on the desired pool
+    function restake(uint256 _poolId) external;
 
     /// @notice Untake amount from specific pool
     /// @param _poolId a parameter, pass pool Id to unstake amount on the specific pool
