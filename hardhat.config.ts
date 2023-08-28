@@ -82,6 +82,10 @@ function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
 const config: HardhatUserConfig = {
   networks: {
     hardhat: {
+      forking: {
+        url: "https://goerli.infura.io/v3/b17715f3b04d4ccb90389a946de9c598",
+        blockNumber: 9493050,
+      },
       accounts: {
         mnemonic,
       },
