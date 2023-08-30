@@ -15,51 +15,52 @@ export default async function deploy(
   );
 
   console.log("Deploying CentherStaking...");
-  
-  // let args = [
-  //   "0x538584360a8ec67338Ce73721585aC386d7a4e6E",
-  //   "0xdD15D2650387Fb6FEDE27ae7392C402a393F8A37",
-  // ];
 
-  //mainnet
   let args = [
-    "", //place centher registration
-    "", //place platform address
+    "0x538584360a8ec67338Ce73721585aC386d7a4e6E",
+    "0xdD15D2650387Fb6FEDE27ae7392C402a393F8A37",
   ];
 
-  const instance = await upgrades.deployProxy(CentherStaking, args, {
-    initializer: "initialize",
-  });
+  //mainnet
+  // let args = [
+  //   "", //place centher registration
+  //   "", //place platform address
+  // ];
 
-  await instance.waitForDeployment();
+  // const instance = await upgrades.deployProxy(CentherStaking, args, {
+  //   initializer: "initialize",
+  // });
 
-  await delay(26000);
-  console.log("Deployed Address", instance.target);
+  // await instance.waitForDeployment();
 
-  if (hre.network.name != "hardhat") {
-    await hre.run("verify:verify", {
-      address: instance.target,
-      constructorArguments: [],
-    });
-  }
-
-  // Upgrading
-  // const CentherStakingV2 = await ethers.getContractFactory("CentherStaking");
-  // const UPGRADEABLE_PROXY = "";
-  // const upgraded = await upgrades.upgradeProxy(
-  //   UPGRADEABLE_PROXY,
-  //   CentherStaking
-  // );
-  // await upgraded.waitForDeployment();
   // await delay(26000);
-  // console.log("Deployed Address", await upgraded.target);
+  // console.log("Deployed Address", instance.target);
 
   // if (hre.network.name != "hardhat") {
   //   await hre.run("verify:verify", {
-  //     address: upgraded.target,
+  //     address: instance.target,
   //     constructorArguments: [],
   //   });
   // }
+
+  // Upgrading
+  const CentherStakingV2 = await ethers.getContractFactory("CentherStaking");
+  // const UPGRADEABLE_PROXY = "0xef326CdAdA59D3A740A76bB5f4F88Fb2f1076164"; //tetsnet
+  const UPGRADEABLE_PROXY = ""; //mainnet
+  const upgraded = await upgrades.upgradeProxy(
+    UPGRADEABLE_PROXY,
+    CentherStaking
+  );
+  await upgraded.waitForDeployment();
+  await delay(26000);
+  console.log("Deployed Address", await upgraded.target);
+
+  if (hre.network.name != "hardhat") {
+    await hre.run("verify:verify", {
+      address: upgraded.target,
+      constructorArguments: [],
+    });
+  }
 
   // for simple deployment
   // const instance = await CentherStaking.deploy(args[0], args[1]);

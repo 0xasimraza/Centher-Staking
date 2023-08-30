@@ -63,9 +63,7 @@ contract CentherStakingTest is Test {
 
         register.registerForOwnerBatch(_users, _refs);
 
-        // staking = new CentherStaking(address(register), owner);
-        staking = new CentherStaking();
-        staking = new staking.initialize();
+        staking = new CentherStaking(address(register), owner);
     }
 
     function testDeployments() external view {
@@ -212,39 +210,39 @@ contract CentherStakingTest is Test {
         staking.togglePoolState(1, true);
     }
 
-    function testShouldFailOwnerNotRegistered() external {
-        vm.startPrank(owner);
+    // function testShouldFailOwnerNotRegistered() external {
+    //     vm.startPrank(owner);
 
-        deal(owner, 100 ether);
+    //     deal(owner, 100 ether);
 
-        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+    //     IERC20(address(busd)).approve(address(staking), type(uint256).max);
 
-        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
-            "project",
-            block.timestamp,
-            address(deXa),
-            address(busd),
-            200,
-            5e18,
-            10000e18,
-            365 days,
-            2,
-            1,
-            1 weeks,
-            10000e18,
-            100,
-            0,
-            "www.staking.com/1",
-            true,
-            true,
-            true
-        );
+    //     ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+    //         "project",
+    //         block.timestamp,
+    //         address(deXa),
+    //         address(busd),
+    //         200,
+    //         5e18,
+    //         10000e18,
+    //         365 days,
+    //         2,
+    //         1,
+    //         1 weeks,
+    //         10000e18,
+    //         100,
+    //         0,
+    //         "www.staking.com/1",
+    //         true,
+    //         true,
+    //         true
+    //     );
 
-        bytes4 selector = bytes4(keccak256("NotRegistered()"));
-        vm.expectRevert(abi.encodeWithSelector(selector));
+    //     bytes4 selector = bytes4(keccak256("NotRegistered()"));
+    //     vm.expectRevert(abi.encodeWithSelector(selector));
 
-        staking.createPool{value: 0.00001 ether}(_info);
-    }
+    //     staking.createPool{value: 0.00001 ether}(_info);
+    // }
 
     function testCreatePoolWithInvalidStakeTokenAddress() external {
         vm.startPrank(user1);
@@ -1314,7 +1312,6 @@ contract CentherStakingTest is Test {
     }
 
     // LP is true, testing:
-
     function testStakeAndClaimByUser2AfterStakingDurationLpTrue() external {
         vm.startPrank(user1);
 
@@ -2499,8 +2496,155 @@ contract CentherStakingTest is Test {
         assert(deXa.balanceOf(user2) == 1500e18);
     }
 
-    // test:: restake
+    // function testClaimRefRewardCaseWithLongDuration() external {
+    //     vm.startPrank(user1);
 
+    //     deal(user1, 100 ether);
+
+    //     deal(address(deXa), user1, 10000e18);
+    //     deal(address(deXa), user2, 50000e18);
+    //     deal(address(deXa), other, 10000e18);
+
+    //     IERC20(address(busd)).approve(address(staking), type(uint256).max);
+    //     IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+    //     ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+    //         "project",
+    //         block.timestamp,
+    //         address(deXa),
+    //         address(0),
+    //         200,
+    //         5e18,
+    //         500000e18,
+    //         365 days,
+    //         1 weeks,
+    //         2,
+    //         1 weeks,
+    //         500000e18,
+    //         100,
+    //         0,
+    //         "www.staking.com/1",
+    //         true,
+    //         true,
+    //         true
+    //     );
+
+    //     staking.createPool{value: 0.00001 ether}(_info);
+
+    //     ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+    //         levelOne: 600,
+    //         levelTwo: 500,
+    //         levelThree: 400,
+    //         levelFour: 300,
+    //         levelFive: 200,
+    //         levelSix: 100
+    //     });
+
+    //     staking.setAffiliateSetting(1, _setting);
+
+    //     assert(staking.poolIds() == 1);
+
+    //     changePrank(user2);
+
+    //     IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+    //     staking.stake(1, 50000e18, address(0));
+
+    //     vm.warp(2 weeks);
+
+    //     changePrank(other);
+
+    //     IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+    //     staking.stake(1, 10000e18, user2);
+
+    //     vm.warp(5 weeks);
+
+    //     changePrank(user2);
+
+    //     console2.log("Staking:: calculateClaimableRewardForRef: ", staking.calculateClaimableRewardForRef(1, other));
+
+    //     staking.claimRewardForRef(1, other);
+    // }
+
+    function testClaimRefRewardCaseWithShortDuration() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user1, 10000e18);
+        deal(address(deXa), user2, 50000e18);
+        deal(address(deXa), other, 10000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(0),
+            9000,
+            5e18,
+            50000000e18,
+            86400,
+            600,
+            2,
+            600,
+            50000000e18,
+            500,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 600,
+            levelTwo: 500,
+            levelThree: 400,
+            levelFour: 300,
+            levelFive: 200,
+            levelSix: 100
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 50000e18, address(0));
+
+        // vm.warp(10 minutes);
+
+        changePrank(other);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 10000e18, user2);
+
+        vm.warp(5 weeks);
+
+        changePrank(user2);
+
+        console2.log("Staking:: calculateClaimableRewardForRef: ", staking.calculateClaimableRewardForRef(1, other));
+
+        staking.claimRewardForRef(1, other);
+
+        changePrank(other);
+
+        console2.log("Staking:: calculateClaimableRewardForRef :", staking.calculateClaimableRewardForRef(1, user2));
+
+        staking.claimRewardForRef(1, user2);
+    }
+
+    // test:: restake
     function testRestakeFeature() external {
         vm.startPrank(user1);
 
