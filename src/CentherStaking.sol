@@ -472,7 +472,6 @@ contract CentherStaking is ICentherStaking {
 
                     break;
                 } else {
-
                     sendingAmountToOwner += _returnRewardAmountToOwner(_poolId, msg.sender, stakes[i].stakedAmount, i);
 
                     if (poolsInfo[_poolId].rewardModeForRef == RefMode.TimeBasedReward) {
@@ -533,7 +532,6 @@ contract CentherStaking is ICentherStaking {
 
         for (uint256 i; i < _stakes.length; i++) {
             unchecked {
-
                 passdTime = block.timestamp > _stakes[i].stakingDuration
                     ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
                     : block.timestamp - _stakes[i].lastRewardClaimed;
@@ -681,7 +679,6 @@ contract CentherStaking is ICentherStaking {
             uint256 passdTime;
             for (uint256 i; i < _stakes.length; i++) {
                 unchecked {
-
                     passdTime = block.timestamp > _stakes[i].stakingDuration
                         ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
                         : block.timestamp - _stakes[i].lastRewardClaimed;
@@ -695,9 +692,10 @@ contract CentherStaking is ICentherStaking {
     }
 
     function _calcReward(uint256 _poolId, uint256 _duration, uint256 _amount) internal view returns (uint256 reward) {
-        PoolInfo memory _poolInfo = poolsInfo[_poolId];
+        // PoolInfo memory _poolInfo = poolsInfo[_poolId];
         unchecked {
-            reward = (_amount * _poolInfo.annualStakingRewardRate * _duration * _poolInfo.rate) / (10000 * _YEAR * 1e18);
+            reward = (_amount * poolsInfo[_poolId].annualStakingRewardRate * _duration * poolsInfo[_poolId].rate)
+                / (10000 * _YEAR * 1e18);
         }
     }
 
@@ -787,27 +785,10 @@ contract CentherStaking is ICentherStaking {
         view
         returns (uint256 amount)
     {
-        PoolInfo memory _poolInfo = poolsInfo[_poolId];
         Stake memory _stakes = userStakes[_poolId][_user][i];
-        uint256 passdTime;
 
-        unchecked {
+        uint256 reward = _calcReward(_poolId, _stakes.stakingDuration - _stakes.lastRewardClaimed, cancelStake);
 
-            passdTime = block.timestamp > _stakes.stakingDuration
-                ? _stakes.stakingDuration - _stakes.lastRewardClaimed
-                : block.timestamp - _stakes.lastRewardClaimed;
-        }
-
-        if (passdTime >= _poolInfo.claimDuration) {
-            uint256 reward = _calcReward(_poolId, passdTime, cancelStake);
-
-            if (_stakes.lastRewardClaimed == _stakes.stakedTime && passdTime < _poolInfo.setting.firstRewardDuration) {
-                reward = 0;
-            }
-
-            if (reward != 0) {
-                amount += reward;
-            }
-        }
+        amount += reward;
     }
 }
