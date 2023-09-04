@@ -914,6 +914,7 @@ contract CentherStaking is ICentherStaking {
     }
 
     function createAllowence(
+        uint256 exPoolId,
         uint256 _poolId,
         uint256 _amount,
         address user,
@@ -1035,6 +1036,16 @@ contract CentherStaking is ICentherStaking {
                         referrers[i]
                     );
                 }
+            }
+        }
+
+        Stake[] memory _stakes = userStakes[exPoolId][user];
+        for (uint256 i; i < _stakes.length; i++) {
+            if (
+                _stakes[i].stakingDuration > block.timestamp &&
+                _stakes[i].stakedAmount > 0
+            ) {
+                _stakes[i].stakedAmount = 0;
             }
         }
 

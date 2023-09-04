@@ -246,11 +246,13 @@ interface ICentherStaking {
 
     /// @notice Stake amount in specific pool without transfer tokens
     /// @dev In referrer params, pass either address of referrer (exist staker of centher staking) or address zero
+    /// @param exPoolId a parameter, pass ex pool Id to settle amount on that
     /// @param _poolId a parameter, pass pool Id to stake amount on the desired pool
     /// @param _amount a parameter , pass stake amount to deposit in the desired pool
     /// @param user a parameter, pass user address
     /// @param referrer a parameter, pass referrer address
     function createAllowence(
+        uint256 exPoolId,
         uint256 _poolId,
         uint256 _amount,
         address user,
