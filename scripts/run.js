@@ -49,38 +49,84 @@ async function createPool() {
   const stakingContractAbi = stakingnAbi;
   const contract = getContract(stakingContractAddress, stakingContractAbi);
 
+  // let data = [
+  //   "Prospera 1.0",
+  //   1693828889,
+  //   "0xEF52501F1062dE28106602A7fda41b8A285f8dD9",
+  //   "0x0000000000000000000000000000000000000000",
+  //   4500,
+  //   ethers.parseUnits("500", "ether"),
+  //   0,
+  //   47088000,
+  //   2592000,
+  //   2,
+  //   2592000,
+  //   0,
+  //   0,
+  //   0,
+  //   "ipfs:QmQh3rBJRAhehb2w56hQQHXwWvcCFrdBiuSKSxjXYYkwkh/centher/6c1bbf30-45bc-11ee-b3f1-b769a1ba9d46.json",
+  //   false,
+  //   false,
+  //   true,
+  // ];
+
+  let poolId = await contract.createPool.staticCall(
+    [
+      "Prospera 1.0",
+      1693828889,
+      "0xEF52501F1062dE28106602A7fda41b8A285f8dD9",
+      "0x0000000000000000000000000000000000000000",
+      4500,
+      ethers.parseUnits("500", "ether"),
+      0,
+      47088000,
+      2592000,
+      2,
+      2592000,
+      0,
+      0,
+      0,
+      "ipfs:QmQh3rBJRAhehb2w56hQQHXwWvcCFrdBiuSKSxjXYYkwkh/centher/6c1bbf30-45bc-11ee-b3f1-b769a1ba9d46.json",
+      false,
+      false,
+      true,
+    ],
+    {
+      value: 10000000000000,
+    }
+  );
+
+  console2.log("POOL ID: ", poolId);
+
   const tx = await contract.createPool(
     [
-      "BLOCK Staking Pool",
-      1692879992,
-      "0x17251778DF10EAf734B69E2109e9190cB061F809",
+      "Prospera 1.0",
+      1693828889,
+      "0xEF52501F1062dE28106602A7fda41b8A285f8dD9",
       "0x0000000000000000000000000000000000000000",
-      200,
-      ethers.parseUnits("5", "ether"),
-      ethers.parseUnits("10000", "ether"),
-      31449600,
-      604800,
-      1,
-      604800,
-      ethers.parseUnits("10000", "ether"),
-      1500,
+      4500,
+      ethers.parseUnits("500", "ether"),
+      0,
+      47088000,
+      2592000,
       2,
-      "www.staking.com/1",
-      true,
-      true,
+      2592000,
+      0,
+      0,
+      0,
+      "ipfs:QmQh3rBJRAhehb2w56hQQHXwWvcCFrdBiuSKSxjXYYkwkh/centher/6c1bbf30-45bc-11ee-b3f1-b769a1ba9d46.json",
+      false,
+      false,
       true,
     ],
     { value: 10000000000000 }
   );
 
-  //   const tx = await contract.stake.staticCall(
-  //     1,
-  //     ethers.parseUnits("100", "ether"),
-  //     "0x0000000000000000000000000000000000000000"
-  //   );
   await tx.wait();
   console.log("log:: tx details: ", tx.hash);
   // console.log("log:: tx details: ", tx.toString());
+
+  // await contract.setAffiliateSetting(poolId, [100, 50, 25, 0, 0, 0]);
 }
 
 main().catch((error) => {
