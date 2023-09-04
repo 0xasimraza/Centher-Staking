@@ -62,7 +62,7 @@ contract CentherStaking is ICentherStaking {
         register = IRegistration(_registration);
         _unlocked = 1;
         platform = _platform;
-        platformFees = 1 ether; 
+        platformFees = 1 ether;
         referralDeep = 6;
     }
 
@@ -70,7 +70,8 @@ contract CentherStaking is ICentherStaking {
     function createPool(PoolCreationInputs calldata _info)
         external
         payable
-        override onlyCitizen
+        override
+        onlyCitizen
         returns (uint256 newPoolId)
     {
         if (_info.stakeToken == address(0)) {
@@ -801,7 +802,6 @@ contract CentherStaking is ICentherStaking {
     }
 
     function _calcReward(uint256 _poolId, uint256 _duration, uint256 _amount) internal view returns (uint256 reward) {
-        // PoolInfo memory _poolInfo = poolsInfo[_poolId];
         unchecked {
             reward = (_amount * poolsInfo[_poolId].annualStakingRewardRate * _duration * poolsInfo[_poolId].rate)
                 / (10000 * _YEAR * 1e18);
