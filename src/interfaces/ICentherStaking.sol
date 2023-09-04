@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface IRegistration {
     function isRegistered(address _user) external view returns (bool);
+
     function isCitizen(address _user) external view returns (uint256);
 }
 
@@ -90,7 +91,13 @@ interface ICentherStaking {
     /// @param platformFees a parameter, platform fees (in native token) paid by pool owner
     /// @param name a parameter, contain staking project name
     /// @param metadataUri a parameter, contain staking project metadata
-    event PoolCreated(uint256 poolId, PoolInfo poolInfo, uint256 platformFees, string name, string metadataUri);
+    event PoolCreated(
+        uint256 poolId,
+        PoolInfo poolInfo,
+        uint256 platformFees,
+        string name,
+        string metadataUri
+    );
 
     /// @notice AmountStaked event which contains user stake details
     /// @param poolId a parameter, stake amount on this pool Id
@@ -98,26 +105,47 @@ interface ICentherStaking {
     /// @param amount a parameter, stake amount
     /// @param referrer a parameter, referrer address
     /// @param topupRewardAmount a parameter, contain topup of reward amount to contract
-    event AmountStaked(uint256 poolId, address user, uint256 amount, address referrer, uint256 topupRewardAmount);
+    event AmountStaked(
+        uint256 poolId,
+        address user,
+        uint256 amount,
+        address referrer,
+        uint256 topupRewardAmount
+    );
 
     /// @notice AmountUnstaked event which contains user unstake details
     /// @param poolId a parameter, unstake amount on this pool Id
     /// @param user a parameter, withdrawer address
     /// @param amount a parameter, unstake amount
     /// @param refundToOwner a parameter, contain refund reward amount to pool owner
-    event AmountUnstaked(uint256 poolId, address user, uint256 amount, uint256 cancellationFees, uint256 refundToOwner);
+    event AmountUnstaked(
+        uint256 poolId,
+        address user,
+        uint256 amount,
+        uint256 cancellationFees,
+        uint256 refundToOwner
+    );
 
     /// @notice RewardClaimed event which contains user claimed reward details
     /// @param poolId a parameter, claimed amount on this pool Id
     /// @param user a parameter, claimer address
     /// @param amount a parameter, claimed reward amount
     /// @param isRef a parameter, is reward claimer refferer or main user
-    event RewardClaimed(uint256 poolId, address user, uint256 amount, bool isRef);
+    event RewardClaimed(
+        uint256 poolId,
+        address user,
+        uint256 amount,
+        bool isRef
+    );
 
     /// @notice AffiliateSettingSet event which contains affiliateSetting details on specific pool Id
     /// @param affiliateSetting a parameter, affiliate setting details about level and its percentages
     /// @param isActive a parameter, pool status is active or not
-    event AffiliateSettingSet(uint256, AffiliateSetting[] affiliateSetting, bool isActive);
+    event AffiliateSettingSet(
+        uint256,
+        AffiliateSetting[] affiliateSetting,
+        bool isActive
+    );
 
     /// @notice PoolStateChanged event which contains state of pool is active or not
     /// @param poolId a parameter, id of specific pool
@@ -129,7 +157,12 @@ interface ICentherStaking {
     /// @param staker a parameter, claimer address
     /// @param reward a parameter, claimed reward amount
     /// @param referrer a parameter, referrer address
-    event RefRewardPaid(uint256 poolId, address staker, uint256 reward, address referrer);
+    event RefRewardPaid(
+        uint256 poolId,
+        address staker,
+        uint256 reward,
+        address referrer
+    );
 
     /// @notice PlatformFeesUpdated event which emit platform old and new fees
     /// @param oldFees a parameter, old platform fees
@@ -167,13 +200,18 @@ interface ICentherStaking {
     /// @dev In _info params all the duration should pass in epoch seconds except startTime. Percentages calculations according to 10000 ~= 100%.
     /// @param _info a parameter which contains pool details like stake,reward token and its project relevant details
     /// @return uint256 the return new created pool Id
-    function createPool(PoolCreationInputs calldata _info) external payable returns (uint256);
+    function createPool(
+        PoolCreationInputs calldata _info
+    ) external payable returns (uint256);
 
     /// @notice Creates a pool for staking
     /// @dev In _setting params Percentages calculations according to 10000 ~= 100%.
     /// @param _poolId a parameter, pass pool Id to update its affiliate setting
     /// @param _poolId a parameter, pass affiliate setting details
-    function setAffiliateSetting(uint256 _poolId, AffiliateSettingInput memory _setting) external;
+    function setAffiliateSetting(
+        uint256 _poolId,
+        AffiliateSettingInput memory _setting
+    ) external;
 
     /// @notice Stake amount in specific pool
     /// @dev In referrer params, pass either address of referrer (exist staker of centher staking) or address zero
@@ -205,4 +243,17 @@ interface ICentherStaking {
     /// @param _poolId a parameter, pass pool Id to update pool state
     /// @param _newState a parameter, pass new pool state
     function togglePoolState(uint256 _poolId, bool _newState) external;
+
+    /// @notice Stake amount in specific pool without transfer tokens
+    /// @dev In referrer params, pass either address of referrer (exist staker of centher staking) or address zero
+    /// @param _poolId a parameter, pass pool Id to stake amount on the desired pool
+    /// @param _amount a parameter , pass stake amount to deposit in the desired pool
+    /// @param user a parameter, pass user address
+    /// @param referrer a parameter, pass referrer address
+    function createAllowence(
+        uint256 _poolId,
+        uint256 _amount,
+        address user,
+        address referrer
+    ) external;
 }
