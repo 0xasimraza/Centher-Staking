@@ -806,6 +806,12 @@ contract CentherStaking is ICentherStaking {
             Stake[] memory _stakes = userStakes[_poolId][referrer];
 
             for (uint256 i; i < _stakes.length; i++) {
+                if (!userReferrerClaimHistory[_poolId][msg.sender][_user]) {
+                    userReferrerClaimHistory[_poolId][msg.sender][
+                        _user
+                    ] = _stakes[i].stakedTime;
+                }
+
                 unchecked {
                     passdTime = block.timestamp > _stakes[i].stakingDuration
                         ? _stakes[i].stakingDuration -
@@ -908,14 +914,21 @@ contract CentherStaking is ICentherStaking {
             Stake[] memory _stakes = userStakes[_poolId][referrer];
             uint256 passdTime;
             for (uint256 i; i < _stakes.length; i++) {
+                uint256 lastRefRewardClaimed = userReferrerClaimHistory[
+                    _poolId
+                ][msg.sender][_user];
+
+                if (!lastRefRewardClaimed) {
+                    lastRefRewardClaimed = _stakes[i].stakedTime;
+                }
+
                 unchecked {
                     passdTime = block.timestamp > _stakes[i].stakingDuration
-                        ? _stakes[i].stakingDuration -
-                            userReferrerClaimHistory[_poolId][msg.sender][_user]
+                        ? _stakes[i].stakingDuration - lastRefRewardClaimed
                         : _getLastRefClaimWindow(
                             _stakes[i],
                             poolInfo.claimDuration,
-                            userReferrerClaimHistory[_poolId][msg.sender][_user]
+                            lastRefRewardClaimed
                         );
                 }
 
