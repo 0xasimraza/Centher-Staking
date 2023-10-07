@@ -405,7 +405,7 @@ contract CentherStaking is ICentherStaking {
             unchecked {
                 passdTime = block.timestamp > _stakes[i].stakingDuration
                     ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
-                    : block.timestamp - _stakes[i].lastRewardClaimed;
+                    : _getLastClaimWindow(_stakes[i], _poolInfo.claimDuration);
             }
 
             if (passdTime >= _poolInfo.claimDuration) {
@@ -426,8 +426,9 @@ contract CentherStaking is ICentherStaking {
                     _claimableReward += reward;
 
                     userStakes[_poolId][msg.sender][i].claimedReward += reward;
-                    userStakes[_poolId][msg.sender][i].lastRewardClaimed = block
-                        .timestamp;
+                    userStakes[_poolId][msg.sender][i].lastRewardClaimed =
+                        _stakes[i].lastRewardClaimed +
+                        passdTime;
                 }
             }
         }
