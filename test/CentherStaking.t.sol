@@ -2712,13 +2712,162 @@ contract CentherStakingTest is Test {
 
         staking.claimReward(1);
 
-        vm.warp( 3 * 2620800);
+        vm.warp(3 * 2620800);
 
         staking.unstake(1, 500e18);
 
         vm.warp(55 weeks);
         staking.claimReward(1);
         staking.unstake(1, 500e18);
+    }
+
+    function testCreateAllowanceFeature() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user2, 1000e18);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(0),
+            5000,
+            5e18,
+            10000e18,
+            365 days,
+            1 weeks,
+            1,
+            1 weeks,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            false,
+            true
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 600,
+            levelTwo: 400,
+            levelThree: 200,
+            levelFour: 200,
+            levelFive: 200,
+            levelSix: 200
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 1000e18, address(0));
+
+        (, uint256 stakedAmount,,,) = staking.userStakes(1, user2, 0);
+
+        assert(stakedAmount == 1000e18);
+
+        changePrank(owner);
+
+        IERC20(address(ntr)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info2 = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(ntr),
+            address(0),
+            5000,
+            5e18,
+            10000e18,
+            365 days,
+            1 weeks,
+            1,
+            1 weeks,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            false,
+            true
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info2);
+
+        staking.setAffiliateSetting(2, _setting);
+
+        staking.createAllowence(1, 2, 1000e18, user2, address(0));
+
+        changePrank(user2);
+
+        staking.unstake(2, 1000e18);
+
+        assertEq(ntr.balanceOf(user2), 990000000000000000000);
+    }
+
+    function testProsperaCase() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user2, 1000e18);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "Prospera",
+            block.timestamp,
+            address(deXa),
+            address(0),
+            4500,
+            500000000000000000000,
+            0,
+            47088000,
+            2592000,
+            2,
+            2592000,
+            0,
+            0,
+            0,
+            "ipfs:QmQh3rBJRAhehb2w56hQQHXwWvcCFrdBiuSKSxjXYYkwkh/centher/6c1bbf30-45bc-11ee-b3f1-b769a1ba9d46.json",
+            false,
+            false,
+            true
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 600,
+            levelTwo: 400,
+            levelThree: 200,
+            levelFour: 200,
+            levelFive: 200,
+            levelSix: 200
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 1000e18, address(0));
+
+        (, uint256 stakedAmount,,,) = staking.userStakes(1, user2, 0);
+
+        assert(stakedAmount == 1000e18);
     }
 
     // test:: restake

@@ -46,9 +46,9 @@ contract CentherStaking is ICentherStaking {
         _;
     }
 
-    modifier ownerOnly() {
+    modifier onlyOwner() {
         if (msg.sender != platform) {
-            revert;
+            revert OnlyOwner();
         }
         _;
     }
@@ -995,7 +995,6 @@ contract CentherStaking is ICentherStaking {
         uint256 _duration,
         uint256 _amount
     ) internal view returns (uint256 reward) {
-        // PoolInfo memory _poolInfo = poolsInfo[_poolId];
         unchecked {
             reward =
                 (_amount *
