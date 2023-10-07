@@ -169,6 +169,8 @@ interface ICentherStaking {
     /// @param updatedFees a parameter, new platform fees
     event PlatformFeesUpdated(uint256 oldFees, uint256 updatedFees);
 
+    event ReferrerSet(address user, address referrer, uint256 poolId);
+
     error Locked();
     error OnlyOwner();
     error NotCitizen();
@@ -213,6 +215,11 @@ interface ICentherStaking {
         AffiliateSettingInput memory _setting
     ) external;
 
+    function updateAffiliateSetting(
+        uint256 _poolId,
+        AffiliateSettingInput memory _setting
+    ) external;
+
     /// @notice Stake amount in specific pool
     /// @dev In referrer params, pass either address of referrer (exist staker of centher staking) or address zero
     /// @param _poolId a parameter, pass pool Id to stake amount on the desired pool
@@ -244,17 +251,12 @@ interface ICentherStaking {
     /// @param _newState a parameter, pass new pool state
     function togglePoolState(uint256 _poolId, bool _newState) external;
 
-    /// @notice Stake amount in specific pool without transfer tokens
-    /// @dev In referrer params, pass either address of referrer (exist staker of centher staking) or address zero
-    /// @param exPoolId a parameter, pass ex pool Id to settle amount on that
+    /// @notice Set referrer for a user
     /// @param _poolId a parameter, pass pool Id to stake amount on the desired pool
-    /// @param _amount a parameter , pass stake amount to deposit in the desired pool
     /// @param user a parameter, pass user address
     /// @param referrer a parameter, pass referrer address
-    function createAllowence(
-        uint256 exPoolId,
+    function setReferrer(
         uint256 _poolId,
-        uint256 _amount,
         address user,
         address referrer
     ) external;
