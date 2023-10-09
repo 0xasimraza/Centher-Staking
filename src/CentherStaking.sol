@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import "./interfaces/ICentherStaking.sol";
-import "forge-std/console2.sol";
 
 /// @title Centher Staking as a service
 /// @notice Users can launch their staking projects
@@ -30,7 +29,8 @@ contract CentherStaking is ICentherStaking {
     mapping(uint256 => AffiliateSetting[]) public affiliateSettings;
     mapping(uint256 => mapping(address => Stake[])) public userStakes;
     mapping(uint256 => mapping(address => address)) public userReferrer;
-    mapping(uint256 => mapping(address => mapping(address => uint256))) public userReferrerClaimHistory;
+
+    mapping(bytes32 => uint256) public refDetails;
 
     modifier onlyCitizen() {
         if (register.isCitizen(msg.sender) < block.timestamp) {
@@ -60,19 +60,11 @@ contract CentherStaking is ICentherStaking {
         _unlocked = 1;
     }
 
-    // function initialize(address _registration, address _platform) public {
-    //     register = IRegistration(_registration);
-    //     _unlocked = 1;
-    //     platform = _platform;
-    //     platformFees = 1 ether;
-    //     referralDeep = 6;
-    // }
-
-    constructor(address _registration, address _platform) {
+    function initialize(address _registration, address _platform) public {
         register = IRegistration(_registration);
         _unlocked = 1;
         platform = _platform;
-        platformFees = 0.00001 ether;
+        platformFees = 1 ether;
         referralDeep = 6;
     }
 
@@ -81,10 +73,8 @@ contract CentherStaking is ICentherStaking {
         external
         payable
         override
-        returns (
-            // onlyCitizen
-            uint256 newPoolId
-        )
+        onlyCitizen
+        returns (uint256 newPoolId)
     {
         if (_info.stakeToken == address(0)) {
             revert InvalidTokenAddress();
@@ -251,7 +241,8 @@ contract CentherStaking is ICentherStaking {
         if (totalStakeAmount == 0) {
             userReferrer[_poolId][msg.sender] = referrer;
 
-            userReferrerClaimHistory[_poolId][referrer][msg.sender] = block.timestamp;
+            refDetails[createKey(_poolId, referrer, msg.sender, block.timestamp + _poolInfo.stakingDurationPeriod)] =
+                block.timestamp;
         }
 
         Stake memory _stake = Stake({
@@ -583,9 +574,10 @@ contract CentherStaking is ICentherStaking {
             } else {
                 IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, msg.sender, _claimableReward);
             }
+            emit RewardClaimed(_poolId, msg.sender, _claimableReward, false);
+        } else {
+            revert AmountIsZero();
         }
-
-        emit RewardClaimed(_poolId, msg.sender, _claimableReward, false);
     }
 
     ///@inheritdoc ICentherStaking
@@ -596,11 +588,9 @@ contract CentherStaking is ICentherStaking {
         }
 
         AffiliateSetting[] memory affilateSetting = affiliateSettings[_poolId];
-
         uint256 levels = type(uint256).max;
 
         uint256 totalReward;
-        uint256 reward;
 
         address[] memory referrers = _getReferrerAddresses(_poolId, _user);
         AffiliateSetting[] memory levelsInfo = affiliateSettings[_poolId];
@@ -615,28 +605,40 @@ contract CentherStaking is ICentherStaking {
         }
 
         if (levels != type(uint256).max) {
-            uint256 percent = affilateSetting[levels].percent;
             Stake[] memory _stakes = userStakes[_poolId][_user];
+
             for (uint256 i; i < _stakes.length; i++) {
-                if (userReferrerClaimHistory[_poolId][msg.sender][_user] == 0) {
-                    userReferrerClaimHistory[_poolId][msg.sender][_user] = _stakes[i].stakedTime;
+                if (refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)] == 0) {
+                    refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)] =
+                        _stakes[i].stakedTime;
                 }
 
                 unchecked {
-                    passdTime = block.timestamp > _stakes[i].stakingDuration
-                        ? _stakes[i].stakingDuration - userReferrerClaimHistory[_poolId][msg.sender][_user]
-                        : _getLastRefClaimWindow(
-                            poolsInfo[_poolId].claimDuration, userReferrerClaimHistory[_poolId][msg.sender][_user]
+                    if (block.timestamp > _stakes[i].stakingDuration) {
+                        if (
+                            refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)]
+                                > _stakes[i].stakingDuration
+                        ) {
+                            passdTime = 0;
+                        } else {
+                            passdTime = _stakes[i].stakingDuration
+                                - refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)];
+                        }
+                    } else {
+                        passdTime = _getLastRefClaimWindow(
+                            poolsInfo[_poolId].claimDuration,
+                            refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)]
                         );
+                    }
                 }
 
                 unchecked {
-                    reward = (_stakes[i].stakedAmount * (passdTime) * percent) / (_MONTH * 10000);
+                    totalReward +=
+                        (_stakes[i].stakedAmount * (passdTime) * affilateSetting[levels].percent) / (_MONTH * 10000);
                 }
 
-                userReferrerClaimHistory[_poolId][msg.sender][_user] = block.timestamp;
-
-                totalReward += reward;
+                refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)] =
+                    refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)] + passdTime;
             }
         }
 
@@ -649,6 +651,8 @@ contract CentherStaking is ICentherStaking {
                 );
             }
             emit RewardClaimed(_poolId, msg.sender, totalReward, true);
+        } else {
+            revert AmountIsZero();
         }
     }
 
@@ -678,49 +682,64 @@ contract CentherStaking is ICentherStaking {
         }
     }
 
+    function createKey(uint256 poolId, address referrer, address referral, uint256 stakingDuration)
+        public
+        pure
+        returns (bytes32 key)
+    {
+        key = keccak256(abi.encodePacked(poolId, referrer, referral, stakingDuration));
+    }
+
     function calculateClaimableRewardForRef(uint256 _poolId, address _user)
         external
         view
         returns (uint256 claimableReward)
     {
-        PoolInfo memory poolInfo = poolsInfo[_poolId];
-        if (poolInfo.rewardModeForRef != RefMode.TimeBasedReward) {
+        if (poolsInfo[_poolId].rewardModeForRef != RefMode.TimeBasedReward) {
             revert PoolRefModeIsNotTimeBased();
         }
 
         AffiliateSetting[] memory affilateSetting = affiliateSettings[_poolId];
-
-        address referrer = userReferrer[_poolId][_user];
-
         uint256 levels = type(uint256).max;
 
-        for (uint256 i; i < affilateSetting.length; i++) {
-            if (referrer == msg.sender) {
-                levels = i;
-            } else {
-                referrer = userReferrer[_poolId][_user];
+        address[] memory referrers = _getReferrerAddresses(_poolId, _user);
+        AffiliateSetting[] memory levelsInfo = affiliateSettings[_poolId];
+
+        for (uint8 i = 0; i < referrers.length; i++) {
+            if (referrers[i] != address(0) && levelsInfo[i].percent != 0) {
+                if (msg.sender == referrers[i]) {
+                    levels = i;
+                    break;
+                }
             }
         }
 
         if (levels != type(uint256).max) {
-            uint256 percent = affilateSetting[levels].percent;
-            Stake[] memory _stakes = userStakes[_poolId][referrer];
+            Stake[] memory _stakes = userStakes[_poolId][_user];
             uint256 passdTime;
             for (uint256 i; i < _stakes.length; i++) {
-                uint256 lastRefRewardClaimed = userReferrerClaimHistory[_poolId][msg.sender][_user];
-
-                if (lastRefRewardClaimed == 0) {
-                    lastRefRewardClaimed = _stakes[i].stakedTime;
+                unchecked {
+                    if (block.timestamp > _stakes[i].stakingDuration) {
+                        if (
+                            refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)]
+                                > _stakes[i].stakingDuration
+                        ) {
+                            passdTime = 0;
+                        } else {
+                            passdTime = _stakes[i].stakingDuration
+                                - refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)];
+                        }
+                    } else {
+                        passdTime = _getLastRefClaimWindow(
+                            poolsInfo[_poolId].claimDuration,
+                            refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)]
+                        );
+                    }
                 }
 
                 unchecked {
-                    passdTime = block.timestamp > _stakes[i].stakingDuration
-                        ? _stakes[i].stakingDuration - lastRefRewardClaimed
-                        : _getLastRefClaimWindow(poolsInfo[_poolId].claimDuration, lastRefRewardClaimed);
-                }
-
-                unchecked {
-                    claimableReward += (_stakes[i].stakedAmount * (passdTime) * percent) / (_MONTH * 10000);
+                    claimableReward +=
+                        (_stakes[i].stakedAmount * (passdTime) * affilateSetting[levels].percent) / (_MONTH * 10000);
                 }
             }
         }
@@ -751,8 +770,6 @@ contract CentherStaking is ICentherStaking {
         override
         onlyOwner
     {
-        // PoolInfo memory pool = poolsInfo[_poolId];
-
         delete affiliateSettings[_poolId];
 
         affiliateSettings[_poolId].push(AffiliateSetting({level: 1, percent: _setting.levelOne}));
@@ -795,7 +812,7 @@ contract CentherStaking is ICentherStaking {
                     : _getLastClaimWindow(_stakes[i], _poolInfo.claimDuration);
             }
 
-            if (passdTime >= _poolInfo.claimDuration) {
+            if (block.timestamp - _stakes[i].lastRewardClaimed >= _poolInfo.claimDuration) {
                 uint256 reward = _calcReward(_poolId, passdTime, _stakes[i].stakedAmount);
 
                 if (

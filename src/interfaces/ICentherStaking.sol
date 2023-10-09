@@ -143,6 +143,7 @@ interface ICentherStaking {
     error OnlyOwner();
     error NotCitizen();
     error PoolNotExist();
+    error AmountIsZero();
     error NotRegistered();
     error PoolNotActive();
     error AlreadySetted();
