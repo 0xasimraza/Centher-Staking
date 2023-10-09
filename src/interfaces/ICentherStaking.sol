@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface IRegistration {
     function isRegistered(address _user) external view returns (bool);
+
     function isCitizen(address _user) external view returns (uint256);
 }
 
@@ -136,10 +137,13 @@ interface ICentherStaking {
     /// @param updatedFees a parameter, new platform fees
     event PlatformFeesUpdated(uint256 oldFees, uint256 updatedFees);
 
+    event ReferrerSet(address user, address referrer, uint256 poolId);
+
     error Locked();
     error OnlyOwner();
     error NotCitizen();
     error PoolNotExist();
+    error AmountIsZero();
     error NotRegistered();
     error PoolNotActive();
     error AlreadySetted();
@@ -175,6 +179,8 @@ interface ICentherStaking {
     /// @param _poolId a parameter, pass affiliate setting details
     function setAffiliateSetting(uint256 _poolId, AffiliateSettingInput memory _setting) external;
 
+    function updateAffiliateSetting(uint256 _poolId, AffiliateSettingInput memory _setting) external;
+
     /// @notice Stake amount in specific pool
     /// @dev In referrer params, pass either address of referrer (exist staker of centher staking) or address zero
     /// @param _poolId a parameter, pass pool Id to stake amount on the desired pool
@@ -205,4 +211,10 @@ interface ICentherStaking {
     /// @param _poolId a parameter, pass pool Id to update pool state
     /// @param _newState a parameter, pass new pool state
     function togglePoolState(uint256 _poolId, bool _newState) external;
+
+    /// @notice Set referrer for a user
+    /// @param _poolId a parameter, pass pool Id to stake amount on the desired pool
+    /// @param user a parameter, pass user address
+    /// @param referrer a parameter, pass referrer address
+    function setReferrer(uint256 _poolId, address user, address referrer) external;
 }

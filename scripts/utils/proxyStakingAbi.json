@@ -16,6 +16,11 @@
     },
     {
         "inputs": [],
+        "name": "GiveMaxAllowanceOfStakeToken",
+        "type": "error"
+    },
+    {
+        "inputs": [],
         "name": "InvalidMaxStakableAmount",
         "type": "error"
     },
@@ -46,12 +51,22 @@
     },
     {
         "inputs": [],
+        "name": "InvalidUnstakeAmount",
+        "type": "error"
+    },
+    {
+        "inputs": [],
         "name": "Locked",
         "type": "error"
     },
     {
         "inputs": [],
         "name": "MaxStakableAmountReached",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "NotCitizen",
         "type": "error"
     },
     {
@@ -66,12 +81,22 @@
     },
     {
         "inputs": [],
+        "name": "OnlyOwner",
+        "type": "error"
+    },
+    {
+        "inputs": [],
         "name": "OnlyPoolOwnerCanAccess",
         "type": "error"
     },
     {
         "inputs": [],
         "name": "PoolNotActive",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "PoolNotEligibleForRestake",
         "type": "error"
     },
     {
@@ -92,6 +117,11 @@
     {
         "inputs": [],
         "name": "PoolStakingNotStarted",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "UserNotEnoughStake",
         "type": "error"
     },
     {
@@ -208,6 +238,25 @@
             }
         ],
         "name": "AmountUnstaked",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "oldFees",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "updatedFees",
+                "type": "uint256"
+            }
+        ],
+        "name": "PlatformFeesUpdated",
         "type": "event"
     },
     {
@@ -416,6 +465,12 @@
                 "internalType": "uint256",
                 "name": "amount",
                 "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "isRef",
+                "type": "bool"
             }
         ],
         "name": "RewardClaimed",
@@ -540,6 +595,39 @@
             }
         ],
         "name": "claimRewardForRef",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "exPoolId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_poolId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_amount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "referrer",
+                "type": "address"
+            }
+        ],
+        "name": "createAllowence",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -842,6 +930,19 @@
                 "internalType": "uint256",
                 "name": "_poolId",
                 "type": "uint256"
+            }
+        ],
+        "name": "restake",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_poolId",
+                "type": "uint256"
             },
             {
                 "components": [
@@ -941,6 +1042,19 @@
             }
         ],
         "name": "unstake",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_newFees",
+                "type": "uint256"
+            }
+        ],
+        "name": "updatePlatformFees",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
