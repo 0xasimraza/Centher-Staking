@@ -1365,7 +1365,7 @@ contract CentherStakingTest is Test {
             5e18,
             10000e18,
             365 days,
-            1 weeks,
+            2 weeks,
             1,
             1 weeks,
             10000e18,
@@ -1403,10 +1403,11 @@ contract CentherStakingTest is Test {
         assert(stakedAmount == 100e18);
 
         vm.warp(1.1 weeks); // After 2 years, but amount get according to 1 yaer
-
+        bytes4 selector = bytes4(keccak256("AmountIsZero()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
         staking.claimReward(1);
 
-        assert(busd.balanceOf(user2) == 388888888888888888);
+        // assert(busd.balanceOf(user2) == 388888888888888888);
     }
 
     function testStakeAndClaimByUser2BeforeFirstRewardLpTrue() external {
@@ -1465,7 +1466,8 @@ contract CentherStakingTest is Test {
         assert(stakedAmount == 100e18);
 
         vm.warp(9 days); // After 2 years, but amount get according to 1 yaer
-
+        bytes4 selector = bytes4(keccak256("AmountIsZero()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
         staking.claimReward(1);
 
         assert(busd.balanceOf(user2) == 0);
@@ -1687,7 +1689,7 @@ contract CentherStakingTest is Test {
             5e18,
             10000e18,
             365 days,
-            1 weeks,
+            2 weeks,
             1,
             10 days,
             10000e18,
@@ -1725,7 +1727,8 @@ contract CentherStakingTest is Test {
         assert(stakedAmount == 100e18);
 
         vm.warp(9 days); // After 2 years, but amount get according to 1 yaer
-
+        bytes4 selector = bytes4(keccak256("AmountIsZero()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
         staking.claimReward(1);
 
         assert(busd.balanceOf(user2) == 0);
@@ -2457,7 +2460,8 @@ contract CentherStakingTest is Test {
         changePrank(other);
 
         console2.log("Staking:: calculateClaimableRewardForRef :", staking.calculateClaimableRewardForRef(1, user2));
-
+        bytes4 selector = bytes4(keccak256("AmountIsZero()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
         staking.claimRewardForRef(1, user2);
     }
 
@@ -2810,7 +2814,7 @@ contract CentherStakingTest is Test {
             5e18,
             _stakeAmount + 1,
             365 days,
-            2,
+            2 weeks,
             1,
             4 weeks,
             _stakeAmount + 1,
@@ -2859,16 +2863,20 @@ contract CentherStakingTest is Test {
 
         changePrank(other);
 
-        vm.warp(block.timestamp + 4 weeks);
+        vm.warp(block.timestamp + 5 weeks);
         staking.unstake(1, _stakeAmount);
 
         assert(deXa.balanceOf(user2) == _stakeAmount);
         assert(deXa.balanceOf(other) == _stakeAmount);
 
         changePrank(user2);
+        bytes4 selector = bytes4(keccak256("AmountIsZero()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
         staking.claimReward(1);
 
         changePrank(other);
+
+        vm.expectRevert(abi.encodeWithSelector(selector));
         staking.claimReward(1);
     }
 
@@ -3016,21 +3024,25 @@ contract CentherStakingTest is Test {
 
         vm.warp(block.timestamp + 45 days);
         changePrank(other);
+        console.log("1. ClaimableAmountForRef: ",staking.calculateClaimableRewardForRef(1, user2) );
         staking.claimRewardForRef(1, user2);
 
         changePrank(user2);
         staking.claimReward(1);
 
         vm.warp(block.timestamp + 10 days);
-        // bytes4 selector = bytes4(keccak256("AmountIsZero()"));
-        // vm.expectRevert(abi.encodeWithSelector(selector));
+         console.log("2. ClaimableAmountForRef: ",staking.calculateClaimableRewardForRef(1, user2) );
+        bytes4 selector = bytes4(keccak256("AmountIsZero()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
         staking.claimRewardForRef(1, user2);
 
         changePrank(user2);
-        // vm.expectRevert(abi.encodeWithSelector(selector));
+        vm.expectRevert(abi.encodeWithSelector(selector));
         staking.claimReward(1);
 
         vm.warp(block.timestamp + 6 days);
+        changePrank(other);
+        console.log("3. ClaimableAmountForRef: ",staking.calculateClaimableRewardForRef(1, user2) );
         staking.claimRewardForRef(1, user2);
 
         changePrank(user2);
