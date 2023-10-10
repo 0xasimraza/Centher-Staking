@@ -693,7 +693,7 @@ contract CentherStaking is ICentherStaking {
     function calculateClaimableRewardForRef(uint256 _poolId, address _user)
         external
         view
-        returns (uint256 claimableReward)
+        returns (uint256 claimableReward, uint256 passdTime)
     {
         if (poolsInfo[_poolId].rewardModeForRef != RefMode.TimeBasedReward) {
             revert PoolRefModeIsNotTimeBased();
@@ -704,8 +704,8 @@ contract CentherStaking is ICentherStaking {
 
         address[] memory referrers = _getReferrerAddresses(_poolId, _user);
         AffiliateSetting[] memory levelsInfo = affiliateSettings[_poolId];
-
-        for (uint8 i = 0; i < referrers.length; i++) {
+        uint256 i;
+        for (i; i < referrers.length; i++) {
             if (referrers[i] != address(0) && levelsInfo[i].percent != 0) {
                 if (msg.sender == referrers[i]) {
                     levels = i;
@@ -714,10 +714,17 @@ contract CentherStaking is ICentherStaking {
             }
         }
 
+        //clear iterations
+        i = 0;
+
         if (levels != type(uint256).max) {
             Stake[] memory _stakes = userStakes[_poolId][_user];
-            uint256 passdTime;
-            for (uint256 i; i < _stakes.length; i++) {
+
+            for (i; i < _stakes.length; i++) {
+                uint256 lastClaimed = _stakes[i].stakedTime;
+                if (refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)] != 0) {
+                    lastClaimed = refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)];
+                }
                 unchecked {
                     if (block.timestamp > _stakes[i].stakingDuration) {
                         if (
@@ -726,14 +733,10 @@ contract CentherStaking is ICentherStaking {
                         ) {
                             passdTime = 0;
                         } else {
-                            passdTime = _stakes[i].stakingDuration
-                                - refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)];
+                            passdTime = _stakes[i].stakingDuration - lastClaimed;
                         }
                     } else {
-                        passdTime = _getLastRefClaimWindow(
-                            poolsInfo[_poolId].claimDuration,
-                            refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)]
-                        );
+                        passdTime = _getLastRefClaimWindow(poolsInfo[_poolId].claimDuration, lastClaimed);
                     }
                 }
 
