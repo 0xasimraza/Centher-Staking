@@ -46,13 +46,6 @@ contract CentherStaking is ICentherStaking {
         _;
     }
 
-    modifier onlyOwner() {
-        if (msg.sender != platform) {
-            revert OnlyOwner();
-        }
-        _;
-    }
-
     modifier nonReentrant() {
         require(_unlocked == 1);
         _unlocked = 2;
@@ -656,14 +649,6 @@ contract CentherStaking is ICentherStaking {
         }
     }
 
-    function updatePlatformFees(uint256 _newFees) external {
-        if (msg.sender != platform) {
-            revert OnlyOwner();
-        }
-
-        emit PlatformFeesUpdated(platformFees, platformFees = _newFees);
-    }
-
     function calculateTotalReward(uint256 poolId, address user)
         public
         view
@@ -746,48 +731,6 @@ contract CentherStaking is ICentherStaking {
                 }
             }
         }
-    }
-
-    function setReferrer(uint256 _poolId, address user, address referrer) external override onlyOwner {
-        if (poolIds < _poolId) {
-            revert PoolNotExist();
-        }
-
-        PoolInfo memory _poolInfo = poolsInfo[_poolId];
-
-        if (_poolInfo.rewardModeForRef != RefMode.TimeBasedReward) {
-            revert InvalidRewardMode();
-        }
-
-        if (_poolInfo.setting.isLP) {
-            revert NotValidReferral();
-        }
-
-        userReferrer[_poolId][user] = referrer;
-
-        emit ReferrerSet(user, referrer, _poolId);
-    }
-
-    function updateAffiliateSetting(uint256 _poolId, AffiliateSettingInput memory _setting)
-        external
-        override
-        onlyOwner
-    {
-        delete affiliateSettings[_poolId];
-
-        affiliateSettings[_poolId].push(AffiliateSetting({level: 1, percent: _setting.levelOne}));
-
-        affiliateSettings[_poolId].push(AffiliateSetting({level: 2, percent: _setting.levelTwo}));
-
-        affiliateSettings[_poolId].push(AffiliateSetting({level: 3, percent: _setting.levelThree}));
-
-        affiliateSettings[_poolId].push(AffiliateSetting({level: 4, percent: _setting.levelFour}));
-
-        affiliateSettings[_poolId].push(AffiliateSetting({level: 5, percent: _setting.levelFive}));
-
-        affiliateSettings[_poolId].push(AffiliateSetting({level: 6, percent: _setting.levelSix}));
-
-        emit AffiliateSettingSet(_poolId, affiliateSettings[_poolId], poolsInfo[_poolId].setting.isActive);
     }
 
     function _calcReward(uint256 _poolId, uint256 _duration, uint256 _amount) internal view returns (uint256 reward) {
