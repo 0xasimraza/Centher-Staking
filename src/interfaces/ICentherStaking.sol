@@ -179,8 +179,6 @@ interface ICentherStaking {
     /// @param _poolId a parameter, pass affiliate setting details
     function setAffiliateSetting(uint256 _poolId, AffiliateSettingInput memory _setting) external;
 
-    function updateAffiliateSetting(uint256 _poolId, AffiliateSettingInput memory _setting) external;
-
     /// @notice Stake amount in specific pool
     /// @dev In referrer params, pass either address of referrer (exist staker of centher staking) or address zero
     /// @param _poolId a parameter, pass pool Id to stake amount on the desired pool
@@ -212,9 +210,4 @@ interface ICentherStaking {
     /// @param _newState a parameter, pass new pool state
     function togglePoolState(uint256 _poolId, bool _newState) external;
 
-    /// @notice Set referrer for a user
-    /// @param _poolId a parameter, pass pool Id to stake amount on the desired pool
-    /// @param user a parameter, pass user address
-    /// @param referrer a parameter, pass referrer address
-    function setReferrer(uint256 _poolId, address user, address referrer) external;
 }

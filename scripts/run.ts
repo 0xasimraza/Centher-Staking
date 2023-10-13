@@ -1,9 +1,9 @@
 const { ethers } = require("hardhat");
-// const stakingnAbi = require("./utils/proxyStakingAbi.json"); // testnet
-const stakingnAbi = require("./utils/MainnetProxyStakingAbi.json"); //mainnet
+const stakingnAbi = require("./utils/proxyStakingAbi.json"); // testnet
+// const stakingnAbi = require("./utils/MainnetProxyStakingAbi.json"); //mainnet
 
-// const stakingContractAddress = "0xef326CdAdA59D3A740A76bB5f4F88Fb2f1076164"; //testnet
-const stakingContractAddress = "0xb2328A1Cd08F72B17ED32B17f76FcDfa383Bbd32"; //mainnet
+const stakingContractAddress = "0xef326CdAdA59D3A740A76bB5f4F88Fb2f1076164"; //testnet
+// const stakingContractAddress = "0xb2328A1Cd08F72B17ED32B17f76FcDfa383Bbd32"; //mainnet
 
 const tokenAbi = require("./utils/tokenAbi.json");
 
@@ -15,8 +15,8 @@ let zero = "0x0000000000000000000000000000000000000000";
 let provider;
 
 async function main() {
-  // createPool();
-  await createAllowance();
+  createPool();
+  // await createAllowance();
 }
 
 function getContract(address, abi) {
@@ -52,21 +52,21 @@ async function createPool() {
   try {
     let poolId = await contract.createPool.staticCall(
       [
-        "Prospera 1.0",
-        1693910949,
+        "Prospera",
+        1696930900,
         "0xEF52501F1062dE28106602A7fda41b8A285f8dD9",
         "0x0000000000000000000000000000000000000000",
         4500,
         ethers.parseUnits("500", "ether"),
         0,
-        47088000,
-        2592000,
+        86400,
+        600,
         2,
-        2592000,
+        600,
         0,
         0,
         0,
-        "ipfs:QmQh3rBJRAhehb2w56hQQHXwWvcCFrdBiuSKSxjXYYkwkh/centher/6c1bbf30-45bc-11ee-b3f1-b769a1ba9d46.json",
+        "ipfs:QmZmrVzGGYcdppXZ3JXbWZi5ghPwazWmgZwKiujf66R7dd/centher/1bfa8070-4b2c-11ee-b82e-2f96bb0e5e83.json",
         false,
         false,
         true,
@@ -78,32 +78,34 @@ async function createPool() {
 
     console.log("POOL ID: ", poolId);
 
-    // const tx = await contract.createPool(
-    //   [
-    //     "Prospera 1.0",
-    //     1693910949,
-    //     "0xEF52501F1062dE28106602A7fda41b8A285f8dD9",
-    //     "0x0000000000000000000000000000000000000000",
-    //     4500,
-    //     ethers.parseUnits("500", "ether"),
-    //     0,
-    //     47088000,
-    //     2592000,
-    //     2,
-    //     2592000,
-    //     0,
-    //     0,
-    //     0,
-    //     "ipfs:QmQh3rBJRAhehb2w56hQQHXwWvcCFrdBiuSKSxjXYYkwkh/centher/6c1bbf30-45bc-11ee-b3f1-b769a1ba9d46.json",
-    //     false,
-    //     false,
-    //     true,
-    //   ],
-    //   { value: 10000000000000 }
-    // );
+    const tx = await contract.createPool(
+      [
+        "Prospera",
+        1696930900,
+        "0xEF52501F1062dE28106602A7fda41b8A285f8dD9",
+        "0x0000000000000000000000000000000000000000",
+        4500,
+        ethers.parseUnits("500", "ether"),
+        0,
+        86400,
+        600,
+        2,
+        600,
+        0,
+        0,
+        0,
+        "ipfs:QmZmrVzGGYcdppXZ3JXbWZi5ghPwazWmgZwKiujf66R7dd/centher/1bfa8070-4b2c-11ee-b82e-2f96bb0e5e83.json",
+        false,
+        false,
+        true,
+      ],
+      {
+        value: 10000000000000,
+      }
+    );
 
-    // await tx.wait();
-    // console.log("log:: tx details: ", tx.hash);
+    await tx.wait();
+    console.log("log:: tx details: ", tx.hash);
   } catch (error) {
     console.log("ERROR: ", error);
   }
