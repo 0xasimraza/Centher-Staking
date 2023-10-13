@@ -32,6 +32,8 @@ contract CentherStaking is ICentherStaking {
 
     mapping(bytes32 => uint256) public refDetails;
 
+    bool private initialized;
+
     modifier onlyCitizen() {
         if (register.isCitizen(msg.sender) < block.timestamp) {
             revert NotCitizen();
@@ -54,6 +56,8 @@ contract CentherStaking is ICentherStaking {
     }
 
     function initialize(address _registration, address _platform) public {
+        require(!initialized, "Contract instance has already been initialized");
+        initialized = true;
         register = IRegistration(_registration);
         _unlocked = 1;
         platform = _platform;
