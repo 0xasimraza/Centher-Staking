@@ -45,9 +45,9 @@ export default async function deploy(
 
   // Upgrading
   // const CentherStakingV2 = await ethers.getContractFactory("CentherStaking");
-  // const UPGRADEABLE_PROXY = "0xef326CdAdA59D3A740A76bB5f4F88Fb2f1076164"; //testnet:goerli
+  const UPGRADEABLE_PROXY = "0xef326CdAdA59D3A740A76bB5f4F88Fb2f1076164"; //testnet:goerli
   // const UPGRADEABLE_PROXY = "0xe0267b29Af5ffAa2036b34baCb19C77746a688f4"; //testnet:sepolia
-  const UPGRADEABLE_PROXY = "0xb2328A1Cd08F72B17ED32B17f76FcDfa383Bbd32"; //mainnet
+  // const UPGRADEABLE_PROXY = "0xb2328A1Cd08F72B17ED32B17f76FcDfa383Bbd32"; //mainnet
   const upgraded = await upgrades.upgradeProxy(
     UPGRADEABLE_PROXY,
     CentherStaking

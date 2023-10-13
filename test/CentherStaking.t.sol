@@ -2453,13 +2453,10 @@ contract CentherStakingTest is Test {
 
         changePrank(user2);
 
-        console2.log("Staking:: calculateClaimableRewardForRef: ", staking.calculateClaimableRewardForRef(1, other));
-
         staking.claimRewardForRef(1, other);
 
         changePrank(other);
 
-        console2.log("Staking:: calculateClaimableRewardForRef :", staking.calculateClaimableRewardForRef(1, user2));
         bytes4 selector = bytes4(keccak256("AmountIsZero()"));
         vm.expectRevert(abi.encodeWithSelector(selector));
         staking.claimRewardForRef(1, user2);
@@ -2646,12 +2643,12 @@ contract CentherStakingTest is Test {
         staking.createPool{value: 0.00001 ether}(_info);
 
         ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
-            levelOne: 600,
-            levelTwo: 400,
-            levelThree: 200,
-            levelFour: 200,
-            levelFive: 200,
-            levelSix: 200
+            levelOne: 100,
+            levelTwo: 50,
+            levelThree: 25,
+            levelFour: 0,
+            levelFive: 0,
+            levelSix: 0
         });
 
         staking.setAffiliateSetting(1, _setting);
@@ -2662,11 +2659,15 @@ contract CentherStakingTest is Test {
 
         IERC20(address(deXa)).approve(address(staking), type(uint256).max);
 
-        staking.stake(1, 1000e18, address(0));
+        staking.stake(1, 1000e18, other);
 
         (, uint256 stakedAmount,,,) = staking.userStakes(1, user2, 0);
 
         assert(stakedAmount == 1000e18);
+
+        vm.warp(block.timestamp + 31 days);
+        changePrank(other);
+        staking.claimRewardForRef(1, user2);
     }
 
     // test:: restake
@@ -3024,14 +3025,14 @@ contract CentherStakingTest is Test {
 
         vm.warp(block.timestamp + 45 days);
         changePrank(other);
-        console.log("1. ClaimableAmountForRef: ",staking.calculateClaimableRewardForRef(1, user2) );
+
         staking.claimRewardForRef(1, user2);
 
         changePrank(user2);
         staking.claimReward(1);
 
         vm.warp(block.timestamp + 10 days);
-         console.log("2. ClaimableAmountForRef: ",staking.calculateClaimableRewardForRef(1, user2) );
+
         bytes4 selector = bytes4(keccak256("AmountIsZero()"));
         vm.expectRevert(abi.encodeWithSelector(selector));
         staking.claimRewardForRef(1, user2);
@@ -3042,12 +3043,14 @@ contract CentherStakingTest is Test {
 
         vm.warp(block.timestamp + 6 days);
         changePrank(other);
-        console.log("3. ClaimableAmountForRef: ",staking.calculateClaimableRewardForRef(1, user2) );
+
         staking.claimRewardForRef(1, user2);
 
         changePrank(user2);
         staking.claimReward(1);
     }
+
+    function testOnlyOwner() external {}
 
     // function testCreateAllowanceFeature() external {
     //     vm.startPrank(user1);
