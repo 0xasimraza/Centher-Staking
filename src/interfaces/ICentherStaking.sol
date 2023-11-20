@@ -30,6 +30,7 @@ interface ICentherStaking {
         bool isUnstakable;
         bool isLP;
         bool showOnCenther;
+        uint256 taxationPercent;
     }
 
     struct PoolInfo {
@@ -45,6 +46,7 @@ interface ICentherStaking {
         uint256 maxStakeAmount;
         RefMode rewardModeForRef;
         PoolSetting setting;
+        uint256 taxationPercent;
     }
 
     struct PoolSetting {
@@ -113,7 +115,7 @@ interface ICentherStaking {
     /// @param user a parameter, claimer address
     /// @param amount a parameter, claimed reward amount
     /// @param isRef a parameter, is reward claimer refferer or main user
-    event RewardClaimed(uint256 poolId, address user, uint256 amount, bool isRef);
+    event RewardClaimed(uint256 poolId, address user, uint256 amount, bool isRef, uint256 burnAmount);
 
     /// @notice AffiliateSettingSet event which contains affiliateSetting details on specific pool Id
     /// @param affiliateSetting a parameter, affiliate setting details about level and its percentages
@@ -130,7 +132,7 @@ interface ICentherStaking {
     /// @param staker a parameter, claimer address
     /// @param reward a parameter, claimed reward amount
     /// @param referrer a parameter, referrer address
-    event RefRewardPaid(uint256 poolId, address staker, uint256 reward, address referrer);
+    event RefRewardPaid(uint256 poolId, address staker, uint256 reward, address referrer, uint256 burnedAmount);
 
     /// @notice PlatformFeesUpdated event which emit platform old and new fees
     /// @param oldFees a parameter, old platform fees
@@ -166,6 +168,7 @@ interface ICentherStaking {
     error GiveMaxAllowanceOfStakeToken();
     error GiveMaxAllowanceOfRewardToken();
     error CannotSetAffiliateSettingForActivePool();
+    error InvalidTaxationPercent();
 
     /// @notice Creates a pool for staking
     /// @dev In _info params all the duration should pass in epoch seconds except startTime. Percentages calculations according to 10000 ~= 100%.
@@ -209,5 +212,4 @@ interface ICentherStaking {
     /// @param _poolId a parameter, pass pool Id to update pool state
     /// @param _newState a parameter, pass new pool state
     function togglePoolState(uint256 _poolId, bool _newState) external;
-
 }
