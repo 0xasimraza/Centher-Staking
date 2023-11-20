@@ -291,6 +291,16 @@ contract CentherStaking is ICentherStaking {
                 if (referrers[i] != address(0) && levelsInfo[i].percent != 0) {
                     uint256 _rewardAmount = (_amount * levelsInfo[i].percent) / 10000;
 
+                    if (_poolInfo.taxationPercent > 0) {
+                        unchecked {
+                            IERC20(_poolInfo.rewardToken).transferFrom(
+                                _poolInfo.poolOwner, address(1), (_rewardAmount * _poolInfo.taxationPercent) / 10000
+                            );
+
+                            _rewardAmount = _rewardAmount - ((_rewardAmount * _poolInfo.taxationPercent) / 10000);
+                        }
+                    }
+
                     IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, referrers[i], _rewardAmount);
 
                     emit RefRewardPaid(_poolId, msg.sender, _rewardAmount, referrers[i]);
