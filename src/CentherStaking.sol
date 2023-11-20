@@ -70,8 +70,10 @@ contract CentherStaking is ICentherStaking {
         external
         payable
         override
-        onlyCitizen
-        returns (uint256 newPoolId)
+        returns (
+            // onlyCitizen
+            uint256 newPoolId
+        )
     {
         if (_info.stakeToken == address(0)) {
             revert InvalidTokenAddress();
@@ -290,20 +292,23 @@ contract CentherStaking is ICentherStaking {
             for (uint8 i; i < referrers.length; i++) {
                 if (referrers[i] != address(0) && levelsInfo[i].percent != 0) {
                     uint256 _rewardAmount = (_amount * levelsInfo[i].percent) / 10000;
+                    uint256 burnedAmount;
 
                     if (_poolInfo.taxationPercent > 0) {
                         unchecked {
-                            IERC20(_poolInfo.rewardToken).transferFrom(
-                                _poolInfo.poolOwner, address(1), (_rewardAmount * _poolInfo.taxationPercent) / 10000
-                            );
+                            burnedAmount = (_rewardAmount * _poolInfo.taxationPercent) / 10000;
+                            IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, address(1), burnedAmount);
 
-                            _rewardAmount = _rewardAmount - ((_rewardAmount * _poolInfo.taxationPercent) / 10000);
+                            // _rewardAmount = _rewardAmount - ((_rewardAmount * _poolInfo.taxationPercent) / 10000);
                         }
                     }
 
-                    IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, referrers[i], _rewardAmount);
+                    IERC20(_poolInfo.rewardToken).transferFrom(
+                        _poolInfo.poolOwner, referrers[i], _rewardAmount - burnedAmount
+                    );
 
-                    emit RefRewardPaid(_poolId, msg.sender, _rewardAmount, referrers[i]);
+                    // emit RefRewardPaid(_poolId, msg.sender, _rewardAmount, referrers[i], 0);
+                    emit RewardClaimed(_poolId, referrers[i], _rewardAmount - burnedAmount, true, burnedAmount);
                 }
             }
         }
@@ -407,10 +412,23 @@ contract CentherStaking is ICentherStaking {
             for (uint8 i; i < referrers.length; i++) {
                 if (referrers[i] != address(0) && levelsInfo[i].percent != 0) {
                     uint256 _rewardAmount = (_claimableReward * levelsInfo[i].percent) / 10000;
+                    uint256 burnedAmount;
 
-                    IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, referrers[i], _rewardAmount);
+                    if (_poolInfo.taxationPercent > 0) {
+                        unchecked {
+                            burnedAmount = (_rewardAmount * _poolInfo.taxationPercent) / 10000;
+                            IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, address(1), burnedAmount);
 
-                    emit RefRewardPaid(_poolId, msg.sender, _rewardAmount, referrers[i]);
+                            // _rewardAmount = _rewardAmount - ((_rewardAmount * _poolInfo.taxationPercent) / 10000);
+                        }
+                    }
+
+                    IERC20(_poolInfo.rewardToken).transferFrom(
+                        _poolInfo.poolOwner, referrers[i], _rewardAmount - burnedAmount
+                    );
+
+                    // emit RefRewardPaid(_poolId, msg.sender, _rewardAmount, referrers[i]);
+                    emit RewardClaimed(_poolId, referrers[i], _rewardAmount - burnedAmount, true, burnedAmount);
                 }
             }
         }

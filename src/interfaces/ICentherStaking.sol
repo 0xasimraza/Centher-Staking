@@ -132,7 +132,7 @@ interface ICentherStaking {
     /// @param staker a parameter, claimer address
     /// @param reward a parameter, claimed reward amount
     /// @param referrer a parameter, referrer address
-    event RefRewardPaid(uint256 poolId, address staker, uint256 reward, address referrer);
+    event RefRewardPaid(uint256 poolId, address staker, uint256 reward, address referrer, uint256 burnedAmount);
 
     /// @notice PlatformFeesUpdated event which emit platform old and new fees
     /// @param oldFees a parameter, old platform fees
