@@ -70,8 +70,8 @@ contract CentherStaking is ICentherStaking {
         external
         payable
         override
+         onlyCitizen
         returns (
-            // onlyCitizen
             uint256 newPoolId
         )
     {
