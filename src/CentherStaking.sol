@@ -365,7 +365,7 @@ contract CentherStaking is ICentherStaking {
             revert InvalidStakeAmount();
         }
 
-        emit RewardClaimed(_poolId, msg.sender, _claimableReward, false);
+        emit RewardClaimed(_poolId, msg.sender, _claimableReward, false, 0);
 
         Stake memory _stake = Stake({
             stakingDuration: block.timestamp + _poolInfo.stakingDurationPeriod,
@@ -599,7 +599,7 @@ contract CentherStaking is ICentherStaking {
                     IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, address(1), burnedAmount);
                 }
             }
-            emit RewardClaimed(_poolId, msg.sender, _claimableReward, false);
+            emit RewardClaimed(_poolId, msg.sender, _claimableReward, false, burnedAmount);
         } else {
             revert AmountIsZero();
         }
@@ -688,7 +688,7 @@ contract CentherStaking is ICentherStaking {
                     );
                 }
             }
-            emit RewardClaimed(_poolId, msg.sender, totalReward, true);
+            emit RewardClaimed(_poolId, msg.sender, totalReward, true, burnedAmount);
         } else {
             revert AmountIsZero();
         }

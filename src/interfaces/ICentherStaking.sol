@@ -115,7 +115,7 @@ interface ICentherStaking {
     /// @param user a parameter, claimer address
     /// @param amount a parameter, claimed reward amount
     /// @param isRef a parameter, is reward claimer refferer or main user
-    event RewardClaimed(uint256 poolId, address user, uint256 amount, bool isRef);
+    event RewardClaimed(uint256 poolId, address user, uint256 amount, bool isRef, uint256 burnAmount);
 
     /// @notice AffiliateSettingSet event which contains affiliateSetting details on specific pool Id
     /// @param affiliateSetting a parameter, affiliate setting details about level and its percentages
