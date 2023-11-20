@@ -101,7 +101,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -145,7 +146,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -192,7 +194,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -240,7 +243,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         bytes4 selector = bytes4(keccak256("InvalidTokenAddress()"));
@@ -273,7 +277,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         bytes4 selector = bytes4(keccak256("InvalidRewardRate()"));
@@ -306,7 +311,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         bytes4 selector = bytes4(keccak256("InvalidRewardRate()"));
@@ -339,7 +345,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         bytes4 selector = bytes4(keccak256("InvalidRewardMode()"));
@@ -373,7 +380,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         bytes4 selector = bytes4(keccak256("GiveMaxAllowanceOfRewardToken()"));
@@ -406,7 +414,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         bytes4 selector = bytes4(keccak256("ValueNotEqualToPlatformFees()"));
@@ -439,7 +448,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -488,7 +498,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -548,7 +559,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -610,7 +622,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             false,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -671,7 +684,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             false,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -730,7 +744,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -782,7 +797,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -824,7 +840,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -877,7 +894,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -932,7 +950,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -987,7 +1006,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1042,7 +1062,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1108,7 +1129,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1177,7 +1199,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1245,7 +1268,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1312,7 +1336,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1374,7 +1399,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1437,7 +1463,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1500,7 +1527,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1569,7 +1597,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             false,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1634,7 +1663,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             false,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1698,7 +1728,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             false,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1763,7 +1794,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             false,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1830,7 +1862,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             false,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1894,7 +1927,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             false,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -1960,7 +1994,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2025,7 +2060,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2091,7 +2127,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             false,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2153,7 +2190,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             false,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2216,7 +2254,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2278,7 +2317,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2345,7 +2385,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2417,7 +2458,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2489,7 +2531,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2563,7 +2606,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2637,7 +2681,8 @@ contract CentherStakingTest is Test {
             "ipfs:QmQh3rBJRAhehb2w56hQQHXwWvcCFrdBiuSKSxjXYYkwkh/centher/6c1bbf30-45bc-11ee-b3f1-b769a1ba9d46.json",
             false,
             false,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2700,7 +2745,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2762,7 +2808,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2824,7 +2871,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             false,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2910,7 +2958,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -2993,7 +3042,8 @@ contract CentherStakingTest is Test {
             "www.staking.com/1",
             true,
             true,
-            true
+            true,
+            0
         );
 
         staking.createPool{value: 0.00001 ether}(_info);
@@ -3050,7 +3100,164 @@ contract CentherStakingTest is Test {
         staking.claimReward(1);
     }
 
-    function testOnlyOwner() external {}
+    // claim reward with taxation
+    function testStakeAndClaimByUser2AWithTaxLpTrue() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user2, 1000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(busd),
+            2000,
+            5e18,
+            10000e18,
+            365 days,
+            1 weeks,
+            1,
+            1 weeks,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 600,
+            levelTwo: 400,
+            levelThree: 200,
+            levelFour: 200,
+            levelFive: 200,
+            levelSix: 200
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 100e18, address(0));
+
+        (, uint256 stakedAmount,,,) = staking.userStakes(1, user2, 0);
+
+        assert(stakedAmount == 100e18);
+
+        vm.warp(108 weeks); // After 2 years, but amount get according to 1 yaer
+
+        staking.claimReward(1);
+
+        assert(busd.balanceOf(user2) == 18.25 ether);
+        assert(busd.balanceOf(address(1)) == 2.027777777777777777 ether);
+    }
+
+    function testClaimRefForRewardWithLevelTwoRefWithTaxation() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user2, 10000e18);
+        deal(address(deXa), other, 10000e18);
+        deal(address(deXa), other2, 10000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(busd),
+            1000,
+            5e18,
+            10000e18,
+            365 days,
+            30 days,
+            2,
+            30 days,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 1000,
+            levelTwo: 500,
+            levelThree: 250,
+            levelFour: 0,
+            levelFive: 0,
+            levelSix: 0
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        changePrank(other);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 1000e18, address(0));
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 1000e18, other);
+
+        vm.warp(block.timestamp + 45 days);
+        changePrank(other);
+
+        staking.claimRewardForRef(1, user2);
+
+        changePrank(user2);
+        staking.claimReward(1);
+
+        vm.warp(block.timestamp + 10 days);
+
+        bytes4 selector = bytes4(keccak256("AmountIsZero()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.claimRewardForRef(1, user2);
+
+        changePrank(user2);
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.claimReward(1);
+
+        vm.warp(block.timestamp + 52 weeks);
+        changePrank(other);
+        busd.transfer(address(500), busd.balanceOf(other));
+
+        staking.claimRewardForRef(1, user2);
+        assert(busd.balanceOf(other) == 1005000000000000000000);
+
+        changePrank(user2);
+        //drain old busd funds
+        busd.transfer(address(500), busd.balanceOf(user2));
+
+        staking.claimReward(1);
+        assert(busd.balanceOf(user2) == 83750000000000000000);
+        assert(busd.balanceOf(address(1)) == 131805555555555555554);
+    }
 
     // function testCreateAllowanceFeature() external {
     //     vm.startPrank(user1);
