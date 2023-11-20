@@ -30,6 +30,7 @@ interface ICentherStaking {
         bool isUnstakable;
         bool isLP;
         bool showOnCenther;
+        uint256 taxationPercent;
     }
 
     struct PoolInfo {
@@ -45,6 +46,7 @@ interface ICentherStaking {
         uint256 maxStakeAmount;
         RefMode rewardModeForRef;
         PoolSetting setting;
+        uint256 taxationPercent;
     }
 
     struct PoolSetting {
@@ -166,6 +168,7 @@ interface ICentherStaking {
     error GiveMaxAllowanceOfStakeToken();
     error GiveMaxAllowanceOfRewardToken();
     error CannotSetAffiliateSettingForActivePool();
+    error InvalidTaxationPercent();
 
     /// @notice Creates a pool for staking
     /// @dev In _info params all the duration should pass in epoch seconds except startTime. Percentages calculations according to 10000 ~= 100%.
@@ -209,5 +212,4 @@ interface ICentherStaking {
     /// @param _poolId a parameter, pass pool Id to update pool state
     /// @param _newState a parameter, pass new pool state
     function togglePoolState(uint256 _poolId, bool _newState) external;
-
 }
