@@ -3101,7 +3101,7 @@ contract CentherStakingTest is Test {
     }
 
     // claim reward with taxation
-    function testStakeAndClaimByUser2AWithTaxLpTrue() external {
+    function testStakeAndClaimByUser2WithTax() external {
         vm.startPrank(user1);
 
         deal(user1, 100 ether);
@@ -3165,7 +3165,7 @@ contract CentherStakingTest is Test {
         assert(busd.balanceOf(address(1)) == 2.027777777777777777 ether);
     }
 
-    function testClaimRefForRewardWithLevelTwoRefWithTaxation() external {
+    function testClaimRefForRewardWithLevelTwoRefTimeBasedRewardWithTaxation() external {
         vm.startPrank(user1);
 
         deal(user1, 100 ether);
@@ -3257,6 +3257,138 @@ contract CentherStakingTest is Test {
         staking.claimReward(1);
         assert(busd.balanceOf(user2) == 83750000000000000000);
         assert(busd.balanceOf(address(1)) == 131805555555555555554);
+    }
+
+    function testClaimRefForRewardWithLevelTwoRefFixedBasedRewardWithTax() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user2, 10000e18);
+        deal(address(deXa), other, 10000e18);
+        deal(address(deXa), other2, 10000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(busd),
+            1000,
+            5e18,
+            10000e18,
+            365 days,
+            30 days,
+            1,
+            30 days,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 1000,
+            levelTwo: 500,
+            levelThree: 250,
+            levelFour: 0,
+            levelFive: 0,
+            levelSix: 0
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        changePrank(other);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 1000e18, address(0));
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 1000e18, other);
+
+        assert(busd.balanceOf(other) == 90 ether);
+        assert(busd.balanceOf(address(1)) == 10 ether);
+    }
+
+    function testRestakeFeatureRefRewardsWithTax() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user1, 10000e18);
+        deal(address(deXa), user2, 10000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(0),
+            200,
+            5e18,
+            10000e18,
+            365 days,
+            30 days,
+            1,
+            30 days,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 600,
+            levelTwo: 400,
+            levelThree: 200,
+            levelFour: 200,
+            levelFive: 200,
+            levelSix: 200
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        changePrank(other);
+            //flush old funds
+        deXa.transfer(address(500),deXa.balanceOf(other));
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 1000e18, other);
+
+    
+
+        vm.warp(156 days);
+
+        staking.restake(1);
+
+        assert(deXa.balanceOf(other) == 54450000000000000000);
+        assert(deXa.balanceOf(address(1)) == 6049999999999999999);
     }
 
     // function testCreateAllowanceFeature() external {
