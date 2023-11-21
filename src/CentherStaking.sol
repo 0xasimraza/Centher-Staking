@@ -70,10 +70,8 @@ contract CentherStaking is ICentherStaking {
         external
         payable
         override
-         onlyCitizen
-        returns (
-            uint256 newPoolId
-        )
+        onlyCitizen
+        returns (uint256 newPoolId)
     {
         if (_info.stakeToken == address(0)) {
             revert InvalidTokenAddress();
@@ -299,7 +297,6 @@ contract CentherStaking is ICentherStaking {
                             burnedAmount = (_rewardAmount * _poolInfo.taxationPercent) / 10000;
                             IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, address(1), burnedAmount);
 
-                            // _rewardAmount = _rewardAmount - ((_rewardAmount * _poolInfo.taxationPercent) / 10000);
                         }
                     }
 
@@ -307,7 +304,6 @@ contract CentherStaking is ICentherStaking {
                         _poolInfo.poolOwner, referrers[i], _rewardAmount - burnedAmount
                     );
 
-                    // emit RefRewardPaid(_poolId, msg.sender, _rewardAmount, referrers[i], 0);
                     emit RewardClaimed(_poolId, referrers[i], _rewardAmount - burnedAmount, true, burnedAmount);
                 }
             }
@@ -419,7 +415,6 @@ contract CentherStaking is ICentherStaking {
                             burnedAmount = (_rewardAmount * _poolInfo.taxationPercent) / 10000;
                             IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, address(1), burnedAmount);
 
-                            // _rewardAmount = _rewardAmount - ((_rewardAmount * _poolInfo.taxationPercent) / 10000);
                         }
                     }
 
@@ -427,7 +422,6 @@ contract CentherStaking is ICentherStaking {
                         _poolInfo.poolOwner, referrers[i], _rewardAmount - burnedAmount
                     );
 
-                    // emit RefRewardPaid(_poolId, msg.sender, _rewardAmount, referrers[i]);
                     emit RewardClaimed(_poolId, referrers[i], _rewardAmount - burnedAmount, true, burnedAmount);
                 }
             }
