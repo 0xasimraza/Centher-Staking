@@ -67,15 +67,6 @@ contract CentherStaking is ICentherStaking {
         referralDeep = 6;
     }
 
-    // constructor(address _registration, address _platform) {
-    //     initialized = true;
-    //     register = IRegistration(_registration);
-    //     _unlocked = 1;
-    //     platform = _platform;
-    //     platformFees = 0.00001 ether; //1 ether;
-    //     referralDeep = 6;
-    // }
-
     ///@inheritdoc ICentherStaking
     function createPool(PoolCreationInputs calldata _info)
         external
@@ -147,9 +138,11 @@ contract CentherStaking is ICentherStaking {
             startTime: _info.startTime,
             taxationPercent: 0
         });
-        // taxationPercent: _info.taxationPercent
 
-        poolTax[newPoolId] = _info.taxationPercent;
+        if (_info.taxationPercent > 0) {
+            poolTax[newPoolId] = _info.taxationPercent;
+            emit PoolCreatedWithTax(newPoolId, poolTax[newPoolId]);
+        }
 
         uint256 rewardAllowance = IERC20(poolsInfo[newPoolId].rewardToken).allowance(msg.sender, address(this));
 
@@ -171,8 +164,26 @@ contract CentherStaking is ICentherStaking {
             }
         }
 
-        // emit PoolCreated(newPoolId, poolsInfo[newPoolId], msg.value, _info.name, _info.poolMetadata);
-        emit PoolCreatedWithTax(newPoolId, poolsInfo[newPoolId], msg.value, _info.name, _info.poolMetadata);
+        emit PoolCreated(
+            newPoolId,
+            PoolInfoForEvent({
+                minStakeAmount: poolsInfo[newPoolId].minStakeAmount,
+                maxStakeAmount: poolsInfo[newPoolId].maxStakeAmount,
+                rewardModeForRef: refMode,
+                poolOwner: msg.sender,
+                stakeToken: poolsInfo[newPoolId].stakeToken,
+                rewardToken: poolsInfo[newPoolId].rewardToken,
+                annualStakingRewardRate: poolsInfo[newPoolId].annualStakingRewardRate,
+                stakingDurationPeriod: poolsInfo[newPoolId].stakingDurationPeriod,
+                claimDuration: poolsInfo[newPoolId].claimDuration,
+                rate: poolsInfo[newPoolId].rate,
+                setting: _setting,
+                startTime: poolsInfo[newPoolId].startTime
+            }),
+            msg.value,
+            _info.name,
+            _info.poolMetadata
+        );
     }
 
     ///@inheritdoc ICentherStaking
@@ -311,7 +322,7 @@ contract CentherStaking is ICentherStaking {
                         unchecked {
                             burnedAmount = (_rewardAmount * poolTax[_poolId]) / 10000;
                             IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, address(1), burnedAmount);
-                            emit TaxBurn(_poolId, burnedAmount);
+                            emit TaxBurn(_poolId, referrers[i], true, burnedAmount);
                         }
                     }
 
@@ -429,7 +440,7 @@ contract CentherStaking is ICentherStaking {
                         unchecked {
                             burnedAmount = (_rewardAmount * poolTax[_poolId]) / 10000;
                             IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, address(1), burnedAmount);
-                            emit TaxBurn(_poolId, burnedAmount);
+                            emit TaxBurn(_poolId, referrers[i], true, burnedAmount);
                         }
                     }
 
@@ -624,7 +635,7 @@ contract CentherStaking is ICentherStaking {
                 IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, msg.sender, _claimableReward);
                 if (burnedAmount > 0) {
                     IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, address(1), burnedAmount);
-                    emit TaxBurn(_poolId, burnedAmount);
+                    emit TaxBurn(_poolId, msg.sender, false, burnedAmount);
                 }
             }
             emit RewardClaimed(_poolId, msg.sender, _claimableReward, false);
@@ -714,7 +725,7 @@ contract CentherStaking is ICentherStaking {
                     IERC20(poolsInfo[_poolId].rewardToken).transferFrom(
                         poolsInfo[_poolId].poolOwner, address(1), burnedAmount
                     );
-                    emit TaxBurn(_poolId, burnedAmount);
+                    emit TaxBurn(_poolId, msg.sender, true, burnedAmount);
                 }
             }
             emit RewardClaimed(_poolId, msg.sender, totalReward, true);
