@@ -49,6 +49,21 @@ interface ICentherStaking {
         uint256 taxationPercent;
     }
 
+    struct PoolInfoForEvent {
+        address poolOwner;
+        address stakeToken;
+        address rewardToken;
+        uint256 rate;
+        uint256 annualStakingRewardRate;
+        uint256 startTime;
+        uint256 stakingDurationPeriod;
+        uint256 claimDuration;
+        uint256 minStakeAmount;
+        uint256 maxStakeAmount;
+        RefMode rewardModeForRef;
+        PoolSetting setting;
+    }
+
     struct PoolSetting {
         uint256 firstRewardDuration;
         uint256 maxStakableAmount;
@@ -93,7 +108,11 @@ interface ICentherStaking {
     /// @param platformFees a parameter, platform fees (in native token) paid by pool owner
     /// @param name a parameter, contain staking project name
     /// @param metadataUri a parameter, contain staking project metadata
-    event PoolCreated(uint256 poolId, PoolInfo poolInfo, uint256 platformFees, string name, string metadataUri);
+    event PoolCreated(uint256 poolId, PoolInfoForEvent poolInfo, uint256 platformFees, string name, string metadataUri);
+
+    event PoolCreatedWithTax(uint256 poolId, uint256 tax);
+
+    event TaxBurn(uint256 poolId, address user, bool isRef , uint256 tax);
 
     /// @notice AmountStaked event which contains user stake details
     /// @param poolId a parameter, stake amount on this pool Id
@@ -115,7 +134,7 @@ interface ICentherStaking {
     /// @param user a parameter, claimer address
     /// @param amount a parameter, claimed reward amount
     /// @param isRef a parameter, is reward claimer refferer or main user
-    event RewardClaimed(uint256 poolId, address user, uint256 amount, bool isRef, uint256 burnAmount);
+    event RewardClaimed(uint256 poolId, address user, uint256 amount, bool isRef);
 
     /// @notice AffiliateSettingSet event which contains affiliateSetting details on specific pool Id
     /// @param affiliateSetting a parameter, affiliate setting details about level and its percentages
@@ -132,7 +151,7 @@ interface ICentherStaking {
     /// @param staker a parameter, claimer address
     /// @param reward a parameter, claimed reward amount
     /// @param referrer a parameter, referrer address
-    event RefRewardPaid(uint256 poolId, address staker, uint256 reward, address referrer, uint256 burnedAmount);
+    event RefRewardPaid(uint256 poolId, address staker, uint256 reward, address referrer);
 
     /// @notice PlatformFeesUpdated event which emit platform old and new fees
     /// @param oldFees a parameter, old platform fees
