@@ -81,10 +81,8 @@ contract CentherStaking is ICentherStaking {
         external
         payable
         override
-        returns (
-            onlyCitizen
-            uint256 newPoolId
-        )
+        onlyCitizen
+        returns (uint256 newPoolId)
     {
         if (_info.stakeToken == address(0)) {
             revert InvalidTokenAddress();
