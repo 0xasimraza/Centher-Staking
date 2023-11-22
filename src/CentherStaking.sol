@@ -159,11 +159,6 @@ contract CentherStaking is ICentherStaking {
             }
         }
 
-        if (_info.taxationPercent > 0) {
-            poolTax[newPoolId] = _info.taxationPercent;
-            emit PoolCreatedWithTax(newPoolId, poolTax[newPoolId]);
-        }
-
         emit PoolCreated(
             newPoolId,
             PoolInfoForEvent({
@@ -184,6 +179,11 @@ contract CentherStaking is ICentherStaking {
             _info.name,
             _info.poolMetadata
         );
+
+        if (_info.taxationPercent > 0) {
+            poolTax[newPoolId] = _info.taxationPercent;
+            emit PoolCreatedWithTax(newPoolId, poolTax[newPoolId]);
+        }
     }
 
     ///@inheritdoc ICentherStaking
@@ -322,7 +322,6 @@ contract CentherStaking is ICentherStaking {
                         unchecked {
                             burnedAmount = (_rewardAmount * poolTax[_poolId]) / 10000;
                             IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, address(1), burnedAmount);
-                            emit TaxBurn(_poolId, referrers[i], true, burnedAmount);
                         }
                     }
 
@@ -331,6 +330,7 @@ contract CentherStaking is ICentherStaking {
                     );
 
                     emit RewardClaimed(_poolId, referrers[i], _rewardAmount - burnedAmount, true);
+                    emit TaxBurn(_poolId, referrers[i], true, burnedAmount);
                 }
             }
         }
@@ -440,7 +440,6 @@ contract CentherStaking is ICentherStaking {
                         unchecked {
                             burnedAmount = (_rewardAmount * poolTax[_poolId]) / 10000;
                             IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, address(1), burnedAmount);
-                            emit TaxBurn(_poolId, referrers[i], true, burnedAmount);
                         }
                     }
 
@@ -449,6 +448,7 @@ contract CentherStaking is ICentherStaking {
                     );
 
                     emit RewardClaimed(_poolId, referrers[i], _rewardAmount - burnedAmount, true);
+                    emit TaxBurn(_poolId, referrers[i], true, burnedAmount);
                 }
             }
         }
@@ -635,10 +635,10 @@ contract CentherStaking is ICentherStaking {
                 IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, msg.sender, _claimableReward);
                 if (burnedAmount > 0) {
                     IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, address(1), burnedAmount);
-                    emit TaxBurn(_poolId, msg.sender, false, burnedAmount);
                 }
             }
             emit RewardClaimed(_poolId, msg.sender, _claimableReward, false);
+            emit TaxBurn(_poolId, msg.sender, false, burnedAmount);
         } else {
             revert AmountIsZero();
         }
@@ -725,10 +725,10 @@ contract CentherStaking is ICentherStaking {
                     IERC20(poolsInfo[_poolId].rewardToken).transferFrom(
                         poolsInfo[_poolId].poolOwner, address(1), burnedAmount
                     );
-                    emit TaxBurn(_poolId, msg.sender, true, burnedAmount);
                 }
             }
             emit RewardClaimed(_poolId, msg.sender, totalReward, true);
+            emit TaxBurn(_poolId, msg.sender, true, burnedAmount);
         } else {
             revert AmountIsZero();
         }
