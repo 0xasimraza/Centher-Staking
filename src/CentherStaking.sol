@@ -139,11 +139,6 @@ contract CentherStaking is ICentherStaking {
             taxationPercent: 0
         });
 
-        if (_info.taxationPercent > 0) {
-            poolTax[newPoolId] = _info.taxationPercent;
-            emit PoolCreatedWithTax(newPoolId, poolTax[newPoolId]);
-        }
-
         uint256 rewardAllowance = IERC20(poolsInfo[newPoolId].rewardToken).allowance(msg.sender, address(this));
 
         if (_info.isLP) {
@@ -162,6 +157,11 @@ contract CentherStaking is ICentherStaking {
                     revert GiveMaxAllowanceOfRewardToken();
                 }
             }
+        }
+
+        if (_info.taxationPercent > 0) {
+            poolTax[newPoolId] = _info.taxationPercent;
+            emit PoolCreatedWithTax(newPoolId, poolTax[newPoolId]);
         }
 
         emit PoolCreated(
