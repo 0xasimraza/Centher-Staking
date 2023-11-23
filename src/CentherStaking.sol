@@ -36,9 +36,18 @@ contract CentherStaking is ICentherStaking {
 
     mapping(uint256 => uint256) public poolTax;
 
+    mapping(uint256 => bool) public nonRefundable;
+
     modifier onlyCitizen() {
         if (register.isCitizen(msg.sender) < block.timestamp) {
             revert NotCitizen();
+        }
+        _;
+    }
+
+    modifier onlyPlatform() {
+        if (msg.sender != platform) {
+            revert OnlyOwner();
         }
         _;
     }
@@ -212,6 +221,15 @@ contract CentherStaking is ICentherStaking {
         poolsInfo[_poolId].setting.isActive = true;
 
         emit AffiliateSettingSet(_poolId, affiliateSettings[_poolId], poolsInfo[_poolId].setting.isActive);
+    }
+
+    function togglePoolNonRefundable(uint256 _poolId, bool _newStatus) external onlyPlatform {
+        if (nonRefundable[_poolId] == _newStatus) {
+            revert AlreadySelected();
+        }
+        nonRefundable[_poolId] = _newStatus;
+
+        emit UpdateNonRefundableStatus(_poolId, nonRefundable[_poolId]);
     }
 
     ///@inheritdoc ICentherStaking
@@ -458,6 +476,10 @@ contract CentherStaking is ICentherStaking {
 
     ///@inheritdoc ICentherStaking
     function unstake(uint256 _poolId, uint256 _amount) external override nonReentrant {
+        if (nonRefundable[_poolId]) {
+            revert NonRefundable();
+        }
+
         if (_amount <= 0) {
             revert InvalidUnstakeAmount();
         }

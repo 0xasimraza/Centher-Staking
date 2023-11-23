@@ -3372,8 +3372,8 @@ contract CentherStakingTest is Test {
         assert(staking.poolIds() == 1);
 
         changePrank(other);
-            //flush old funds
-        deXa.transfer(address(500),deXa.balanceOf(other));
+        //flush old funds
+        deXa.transfer(address(500), deXa.balanceOf(other));
 
         changePrank(user2);
 
@@ -3381,14 +3381,208 @@ contract CentherStakingTest is Test {
 
         staking.stake(1, 1000e18, other);
 
-    
-
         vm.warp(156 days);
 
         staking.restake(1);
 
         assert(deXa.balanceOf(other) == 54450000000000000000);
         assert(deXa.balanceOf(address(1)) == 6049999999999999999);
+    }
+
+    // test:: NonRefundable
+    function testShouldFailNonRefundableAndUnstakeByUser2WithTax() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user2, 1000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(busd),
+            2000,
+            5e18,
+            10000e18,
+            365 days,
+            1 weeks,
+            1,
+            1 weeks,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 600,
+            levelTwo: 400,
+            levelThree: 200,
+            levelFour: 200,
+            levelFive: 200,
+            levelSix: 200
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        changePrank(owner);
+
+        staking.togglePoolNonRefundable(1, true);
+
+        assert(staking.poolIds() == 1);
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 100e18, address(0));
+
+        (, uint256 stakedAmount,,,) = staking.userStakes(1, user2, 0);
+
+        assert(stakedAmount == 100e18);
+
+        vm.warp(108 weeks); // After 2 years, but amount get according to 1 yaer
+
+        staking.claimReward(1);
+
+        bytes4 selector = bytes4(keccak256("NonRefundable()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.unstake(1, stakedAmount);
+    }
+
+    function testNonRefundableAndUnstakeByUser2WithTax() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user2, 1000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(busd),
+            2000,
+            5e18,
+            10000e18,
+            365 days,
+            1 weeks,
+            1,
+            1 weeks,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 600,
+            levelTwo: 400,
+            levelThree: 200,
+            levelFour: 200,
+            levelFive: 200,
+            levelSix: 200
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        changePrank(owner);
+
+        staking.togglePoolNonRefundable(1, true);
+
+        assert(staking.poolIds() == 1);
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 100e18, address(0));
+
+        (, uint256 stakedAmount,,,) = staking.userStakes(1, user2, 0);
+
+        assert(stakedAmount == 100e18);
+
+        vm.warp(108 weeks); // After 2 years, but amount get according to 1 yaer
+
+        staking.claimReward(1);
+
+        changePrank(owner);
+
+        staking.togglePoolNonRefundable(1, false);
+
+        changePrank(user2);
+
+        staking.unstake(1, stakedAmount);
+    }
+
+    function testShouldFailNonRefundableDueToSameStatus() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user2, 1000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(busd),
+            2000,
+            5e18,
+            10000e18,
+            365 days,
+            1 weeks,
+            1,
+            1 weeks,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 600,
+            levelTwo: 400,
+            levelThree: 200,
+            levelFour: 200,
+            levelFive: 200,
+            levelSix: 200
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        changePrank(owner);
+
+        bytes4 selector = bytes4(keccak256("AlreadySelected()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.togglePoolNonRefundable(1, false);
+
+        assert(staking.poolIds() == 1);
     }
 
     // function testCreateAllowanceFeature() external {
