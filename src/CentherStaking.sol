@@ -476,8 +476,8 @@ contract CentherStaking is ICentherStaking {
 
     ///@inheritdoc ICentherStaking
     function unstake(uint256 _poolId, uint256 _amount) external override nonReentrant {
-        if (!nonRefundable[_poolId]) {
-            revert NonRefundableFalse();
+        if (nonRefundable[_poolId]) {
+            revert NonRefundable();
         }
 
         if (_amount <= 0) {
