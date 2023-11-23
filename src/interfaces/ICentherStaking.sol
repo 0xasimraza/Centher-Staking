@@ -160,6 +160,8 @@ interface ICentherStaking {
 
     event ReferrerSet(address user, address referrer, uint256 poolId);
 
+    event UpdateNonRefundableStatus(uint256 poolId, bool status);
+
     error Locked();
     error OnlyOwner();
     error NotCitizen();
@@ -188,6 +190,8 @@ interface ICentherStaking {
     error GiveMaxAllowanceOfRewardToken();
     error CannotSetAffiliateSettingForActivePool();
     error InvalidTaxationPercent();
+    error AlreadySelected();
+    error NonRefundableFalse();
 
     /// @notice Creates a pool for staking
     /// @dev In _info params all the duration should pass in epoch seconds except startTime. Percentages calculations according to 10000 ~= 100%.
@@ -231,4 +235,6 @@ interface ICentherStaking {
     /// @param _poolId a parameter, pass pool Id to update pool state
     /// @param _newState a parameter, pass new pool state
     function togglePoolState(uint256 _poolId, bool _newState) external;
+
+    function togglePoolNonRefundable(uint256 _poolId, bool _newStatus) external;
 }
