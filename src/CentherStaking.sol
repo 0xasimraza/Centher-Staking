@@ -88,7 +88,7 @@ contract CentherStaking is ICentherStaking {
             revert InvalidTokenAddress();
         }
 
-        if (_info.annualStakingRewardRate > 10000 || _info.annualStakingRewardRate == 0) {
+        if (_info.annualStakingRewardRate == 0) {
             revert InvalidRewardRate();
         }
 
