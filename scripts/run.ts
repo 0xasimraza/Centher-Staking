@@ -74,7 +74,7 @@ async function createPool() {
   let arg = [
     "Supreme DeXa Staking",
     1700870400,
-    "0x1bFe4298796198F8664B18A98640CEc7C89b5BAa",
+    "", // put token address here
     "0x0000000000000000000000000000000000000000",
     21600, // 216%
     ethers.parseUnits("25", "ether"),
