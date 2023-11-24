@@ -48,70 +48,79 @@ async function createPool() {
 
   const stakingContractAbi = stakingnAbi;
   const contract = getContract(stakingContractAddress, stakingContractAbi);
+  // let arg = [
+  //   "XYZ Project",
+  //   Math.floor(Date.now() / 1000) + 900,
+  //   "0x1bFe4298796198F8664B18A98640CEc7C89b5BAa",
+  //   "0x0000000000000000000000000000000000000000",
+  //   4500,
+  //   ethers.parseUnits("500", "ether"),
+  //   0,
+  //   86400,
+  //   600,
+  //   2,
+  //   600,
+  //   0,
+  //   0,
+  //   0,
+  //   "ipfs:QmZmrVzGGYcdppXZ3JXbWZi5ghPwazWmgZwKiujf66R7dd/centher/1bfa8070-4b2c-11ee-b82e-2f96bb0e5e83.json",
+  //   false,
+  //   false,
+  //   true,
+  //   100,
+  // ];
 
+  //dexa staking mainnet
+  let arg = [
+    "Supreme DeXa Staking",
+    1700870400,
+    "0x1bFe4298796198F8664B18A98640CEc7C89b5BAa",
+    "0x0000000000000000000000000000000000000000",
+    21600, // 216%
+    ethers.parseUnits("25", "ether"),
+    0,
+    62899200,
+    86400,
+    2,
+    0,
+    0,
+    0,
+    0,
+    "ipfs:QmNNq2ikQWXW6B7dVoXs6m8AMAisBtDUmtYkBd4XPvm1wa/centher/67f49e30-67ff-11ee-87e2-81594cb5404d.json",
+    false,
+    false,
+    true,
+    1000,
+  ];
   try {
-    let poolId = await contract.createPool.staticCall(
-      [
-        "Prospera",
-        1696930900,
-        "0xEF52501F1062dE28106602A7fda41b8A285f8dD9",
-        "0x0000000000000000000000000000000000000000",
-        4500,
-        ethers.parseUnits("500", "ether"),
-        0,
-        86400,
-        600,
-        2,
-        600,
-        0,
-        0,
-        0,
-        "ipfs:QmZmrVzGGYcdppXZ3JXbWZi5ghPwazWmgZwKiujf66R7dd/centher/1bfa8070-4b2c-11ee-b82e-2f96bb0e5e83.json",
-        false,
-        false,
-        true,
-      ],
-      {
-        value: 10000000000000,
-      }
+    let poolId = await contract.createPool.staticCall(arg, {
+      value: 10000000000000,
+    });
+
+    console.log("POOL ID: ", poolId.toString());
+
+    const tx1 = await contract.createPool(arg, {
+      value: 10000000000000,
+    });
+
+    await tx1.wait();
+    console.log("log:: Pool Created tx hash: ", tx1.hash);
+
+    const tx2 = await contract.setAffiliateSetting(
+      poolId,
+      [200, 150, 150, 100, 100, 100]
     );
 
-    console.log("POOL ID: ", poolId);
+    await tx2.wait();
+    console.log("log:: Reward Settings Created tx hash: ", tx2.hash);
 
-    const tx = await contract.createPool(
-      [
-        "Prospera",
-        1696930900,
-        "0xEF52501F1062dE28106602A7fda41b8A285f8dD9",
-        "0x0000000000000000000000000000000000000000",
-        4500,
-        ethers.parseUnits("500", "ether"),
-        0,
-        86400,
-        600,
-        2,
-        600,
-        0,
-        0,
-        0,
-        "ipfs:QmZmrVzGGYcdppXZ3JXbWZi5ghPwazWmgZwKiujf66R7dd/centher/1bfa8070-4b2c-11ee-b82e-2f96bb0e5e83.json",
-        false,
-        false,
-        true,
-      ],
-      {
-        value: 10000000000000,
-      }
-    );
+    const tx3 = await contract.togglePoolNonRefundable(poolId, true);
+    await tx3.wait();
 
-    await tx.wait();
-    console.log("log:: tx details: ", tx.hash);
+    console.log("log:: togglePoolNonRefundable Created tx hash: ", tx3.hash);
   } catch (error) {
     console.log("ERROR: ", error);
   }
-  // console.log("log:: tx details: ", tx.toString());
-
-  // await contract.setAffiliateSetting(poolId, [100, 50, 25, 0, 0, 0]);
 }
 
 async function createAllowance() {

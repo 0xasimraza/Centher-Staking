@@ -1,6 +1,11 @@
 [
     {
         "inputs": [],
+        "name": "AlreadySelected",
+        "type": "error"
+    },
+    {
+        "inputs": [],
         "name": "AlreadySetted",
         "type": "error"
     },
@@ -51,6 +56,11 @@
     },
     {
         "inputs": [],
+        "name": "InvalidTaxationPercent",
+        "type": "error"
+    },
+    {
+        "inputs": [],
         "name": "InvalidTokenAddress",
         "type": "error"
     },
@@ -67,6 +77,11 @@
     {
         "inputs": [],
         "name": "MaxStakableAmountReached",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "NonRefundable",
         "type": "error"
     },
     {
@@ -374,7 +389,7 @@
                     }
                 ],
                 "indexed": false,
-                "internalType": "struct ICentherStaking.PoolInfo",
+                "internalType": "struct ICentherStaking.PoolInfoForEvent",
                 "name": "poolInfo",
                 "type": "tuple"
             },
@@ -398,6 +413,25 @@
             }
         ],
         "name": "PoolCreated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "poolId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "tax",
+                "type": "uint256"
+            }
+        ],
+        "name": "PoolCreatedWithTax",
         "type": "event"
     },
     {
@@ -507,6 +541,56 @@
         "type": "event"
     },
     {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "poolId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "isRef",
+                "type": "bool"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "tax",
+                "type": "uint256"
+            }
+        ],
+        "name": "TaxBurn",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "poolId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "status",
+                "type": "bool"
+            }
+        ],
+        "name": "UpdateNonRefundableStatus",
+        "type": "event"
+    },
+    {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -553,6 +637,11 @@
             {
                 "internalType": "uint256",
                 "name": "claimableReward",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "passdTime",
                 "type": "uint256"
             }
         ],
@@ -756,6 +845,11 @@
                         "internalType": "bool",
                         "name": "showOnCenther",
                         "type": "bool"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "taxationPercent",
+                        "type": "uint256"
                     }
                 ],
                 "internalType": "struct ICentherStaking.PoolCreationInputs",
@@ -793,6 +887,25 @@
         "type": "function"
     },
     {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "nonRefundable",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [],
         "name": "platform",
         "outputs": [
@@ -821,6 +934,25 @@
     {
         "inputs": [],
         "name": "poolIds",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "poolTax",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -937,6 +1069,11 @@
                 "internalType": "struct ICentherStaking.PoolSetting",
                 "name": "setting",
                 "type": "tuple"
+            },
+            {
+                "internalType": "uint256",
+                "name": "taxationPercent",
+                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -1045,9 +1182,9 @@
                 "type": "uint256"
             },
             {
-                "internalType": "address",
-                "name": "user",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "_amount",
+                "type": "uint256"
             },
             {
                 "internalType": "address",
@@ -1055,7 +1192,7 @@
                 "type": "address"
             }
         ],
-        "name": "setReferrer",
+        "name": "stake",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1068,17 +1205,12 @@
                 "type": "uint256"
             },
             {
-                "internalType": "uint256",
-                "name": "_amount",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "referrer",
-                "type": "address"
+                "internalType": "bool",
+                "name": "_newStatus",
+                "type": "bool"
             }
         ],
-        "name": "stake",
+        "name": "togglePoolNonRefundable",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1115,69 +1247,6 @@
             }
         ],
         "name": "unstake",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_poolId",
-                "type": "uint256"
-            },
-            {
-                "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "levelOne",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "levelTwo",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "levelThree",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "levelFour",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "levelFive",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "levelSix",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct ICentherStaking.AffiliateSettingInput",
-                "name": "_setting",
-                "type": "tuple"
-            }
-        ],
-        "name": "updateAffiliateSetting",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_newFees",
-                "type": "uint256"
-            }
-        ],
-        "name": "updatePlatformFees",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
