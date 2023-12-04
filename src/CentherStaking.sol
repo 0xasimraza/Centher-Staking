@@ -474,6 +474,103 @@ contract CentherStaking is ICentherStaking {
         emit AmountStaked(_poolId, msg.sender, _claimableReward, address(0), totalReward);
     }
 
+    function restakeByRef(uint256 _poolId, address _user) external override {
+        PoolInfo memory _poolInfo = poolsInfo[_poolId];
+        uint256 totalReward;
+
+        if (msg.sender == _poolInfo.poolOwner) {
+            revert PoolOwnerNotEligibleToStake();
+        }
+
+        if (_poolInfo.stakeToken != _poolInfo.rewardToken) {
+            revert PoolNotEligibleForRestake();
+        }
+
+        if (_poolInfo.startTime > block.timestamp) {
+            revert PoolStakingNotStarted();
+        }
+
+        if (!_poolInfo.setting.isActive) {
+            revert PoolNotActive();
+        }
+
+        if (_poolInfo.rewardModeForRef != RefMode.TimeBasedReward) {
+            revert PoolRefModeIsNotTimeBased();
+        }
+
+        uint256 passdTime;
+        uint256 levels;
+
+        address[] memory referrers = _getReferrerAddresses(_poolId, _user);
+
+        for (uint8 i = 0; i < referrers.length; i++) {
+            if (referrers[i] != address(0) && affiliateSettings[_poolId][i].percent != 0) {
+                if (msg.sender == referrers[i]) {
+                    levels = i;
+                    break;
+                }
+            }
+        }
+
+        if (levels != type(uint256).max) {
+            Stake[] memory _stakes = userStakes[_poolId][_user];
+
+            for (uint256 i; i < _stakes.length; i++) {
+                if (refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)] == 0) {
+                    refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)] =
+                        _stakes[i].stakedTime;
+                }
+
+                unchecked {
+                    if (block.timestamp > _stakes[i].stakingDuration) {
+                        if (
+                            refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)]
+                                > _stakes[i].stakingDuration
+                        ) {
+                            passdTime = 0;
+                        } else {
+                            passdTime = _stakes[i].stakingDuration
+                                - refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)];
+                        }
+                    } else {
+                        passdTime = _getLastRefClaimWindow(
+                            poolsInfo[_poolId].claimDuration,
+                            refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)]
+                        );
+                    }
+                }
+
+                unchecked {
+                    totalReward += (_stakes[i].stakedAmount * (passdTime) * affiliateSettings[_poolId][levels].percent)
+                        / (_MONTH * 10000);
+                }
+
+                refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)] =
+                    refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)] + passdTime;
+            }
+
+            if (totalReward <= 0) revert InvalidStakeAmount();
+
+            if (_poolInfo.setting.isLP) {
+                IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, address(this), totalReward);
+            }
+
+            emit RewardClaimed(_poolId, msg.sender, totalReward, true);
+
+            Stake memory _stake = Stake({
+                stakingDuration: block.timestamp + _poolInfo.stakingDurationPeriod,
+                stakedAmount: totalReward,
+                stakedTime: block.timestamp,
+                lastRewardClaimed: block.timestamp,
+                claimedReward: 0
+            });
+
+            userStakes[_poolId][msg.sender].push(_stake);
+
+            emit AmountStaked(_poolId, msg.sender, totalReward, address(0), 0);
+        }
+    }
+
     ///@inheritdoc ICentherStaking
     function unstake(uint256 _poolId, uint256 _amount) external override nonReentrant {
         if (nonRefundable[_poolId]) {
