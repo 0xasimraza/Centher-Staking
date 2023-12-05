@@ -217,7 +217,7 @@ interface ICentherStaking {
     /// @param _poolId a parameter, pass pool Id to stake amount on the desired pool
     function restake(uint256 _poolId) external;
 
-    function restakeByRef(uint256 _poolId, address _user) external;
+    function restakeByRef(uint256 _poolId, address _user, address referrer) external;
 
     /// @notice Untake amount from specific pool
     /// @param _poolId a parameter, pass pool Id to unstake amount on the specific pool

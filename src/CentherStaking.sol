@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
+import "forge-std/console2.sol";
 
 import "./interfaces/ICentherStaking.sol";
 
@@ -484,7 +485,7 @@ contract CentherStaking is ICentherStaking {
         emit AmountStaked(_poolId, msg.sender, _claimableReward, address(0), totalReward);
     }
 
-    function restakeByRef(uint256 _poolId, address _user) external override {
+    function restakeByRef(uint256 _poolId, address _user, address _referrer) external override {
         PoolInfo memory _poolInfo = poolsInfo[_poolId];
 
         if (msg.sender == _poolInfo.poolOwner) {
@@ -507,13 +508,13 @@ contract CentherStaking is ICentherStaking {
             revert PoolRefModeIsNotTimeBased();
         }
 
-        uint256 passdTime;
         uint256 levels;
+        uint256 passdTime;
         uint256 claimableReward;
 
         address[] memory referrers = _getReferrerAddresses(_poolId, _user);
 
-        for (uint8 i = 0; i < referrers.length; i++) {
+        for (uint256 i; i < referrers.length; i++) {
             if (referrers[i] != address(0) && affiliateSettings[_poolId][i].percent != 0) {
                 if (msg.sender == referrers[i]) {
                     levels = i;
@@ -564,22 +565,7 @@ contract CentherStaking is ICentherStaking {
 
             emit RewardClaimed(_poolId, msg.sender, claimableReward, true);
 
-            Stake memory _stake = Stake({
-                stakingDuration: block.timestamp + _poolInfo.stakingDurationPeriod,
-                stakedAmount: claimableReward,
-                stakedTime: block.timestamp,
-                lastRewardClaimed: block.timestamp,
-                claimedReward: 0
-            });
-
-            userStakes[_poolId][msg.sender].push(_stake);
-
-            if (_poolInfo.setting.isLP) {
-                uint256 newReward = _calcReward(_poolId, _poolInfo.stakingDurationPeriod, claimableReward);
-                IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, address(this), newReward);
-            }
-
-            emit AmountStaked(_poolId, msg.sender, claimableReward, address(0), 0);
+            _stakeByRef(_poolId, claimableReward, _referrer);
         }
     }
 
@@ -947,6 +933,51 @@ contract CentherStaking is ICentherStaking {
                 }
             }
         }
+    }
+
+    function _stakeByRef(uint256 _poolId, uint256 _amount, address _referrer) internal {
+        PoolInfo memory _poolInfo = poolsInfo[_poolId];
+        (,,, uint256 totalStakeAmount) = calculateTotalReward(_poolId, msg.sender);
+        console2.log("totalStakeAmount: ", totalStakeAmount);
+        if (totalStakeAmount == 0) {
+            userReferrer[_poolId][msg.sender] = _referrer;
+
+            refDetails[createKey(_poolId, _referrer, msg.sender, block.timestamp + _poolInfo.stakingDurationPeriod)] =
+                block.timestamp;
+        }
+
+        Stake memory _stake = Stake({
+            stakingDuration: block.timestamp + _poolInfo.stakingDurationPeriod,
+            stakedAmount: _amount,
+            stakedTime: block.timestamp,
+            lastRewardClaimed: block.timestamp,
+            claimedReward: 0
+        });
+
+        userStakes[_poolId][msg.sender].push(_stake);
+        uint256 totalReward;
+
+        if (_poolInfo.setting.isLP) {
+            totalReward = _calcReward(_poolId, _poolInfo.stakingDurationPeriod, _amount);
+
+            if (_poolInfo.rewardModeForRef == RefMode.TimeBasedReward) {
+                address[] memory _referrers = _getReferrerAddresses(_poolId, msg.sender);
+
+                for (uint256 i; i < _referrers.length; i++) {
+                    if (_referrers[i] != address(0) && affiliateSettings[_poolId][i].percent != 0) {
+                        unchecked {
+                            totalReward += (
+                                ((_amount * affiliateSettings[_poolId][i].percent) / 10000)
+                                    * _poolInfo.stakingDurationPeriod
+                            ) / _MONTH;
+                        }
+                    }
+                }
+            }
+            IERC20(_poolInfo.rewardToken).transferFrom(_poolInfo.poolOwner, address(this), totalReward);
+        }
+
+        emit AmountStaked(_poolId, msg.sender, _amount, userReferrer[_poolId][msg.sender], totalReward);
     }
 
     function _calcReward(uint256 _poolId, uint256 _duration, uint256 _amount) internal view returns (uint256 reward) {
