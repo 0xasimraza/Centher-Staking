@@ -3637,6 +3637,272 @@ contract CentherStakingTest is Test {
         staking.restakeByRef(1, user2, address(owner));
     }
 
+    function testShouldFailRestakeByRfDueToZeroReward() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user1, 10000e18);
+
+        deal(address(deXa), user2, 10000e18);
+        deal(address(deXa), other, 10000e18);
+        deal(address(deXa), other2, 10000e18);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(0),
+            1000,
+            5e18,
+            10000e18,
+            365 days,
+            30 days,
+            2,
+            30 days,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 1000,
+            levelTwo: 500,
+            levelThree: 250,
+            levelFour: 0,
+            levelFive: 0,
+            levelSix: 0
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        // changePrank(other);
+
+        // IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        // staking.stake(1, 1000e18, address(0));
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 1000e18, other);
+
+        vm.warp(block.timestamp + 45 days);
+        changePrank(other);
+
+        staking.claimRewardForRef(1, user2);
+
+        changePrank(user2);
+        staking.claimReward(1);
+
+        vm.warp(block.timestamp + 10 days);
+
+        bytes4 selector = bytes4(keccak256("AmountIsZero()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.claimRewardForRef(1, user2);
+
+        changePrank(user2);
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.claimReward(1);
+
+        changePrank(other);
+        vm.warp(block.timestamp + 26 weeks);
+        staking.restakeByRef(1, user2, address(owner));
+
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.claimReward(1);
+    }
+
+    function testMulipleTimesRestakeByRefAndClaimOnRefOldStake() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user1, 10000e18);
+
+        deal(address(deXa), user2, 10000e18);
+        deal(address(deXa), other, 10000e18);
+        deal(address(deXa), other2, 10000e18);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(0),
+            1000,
+            5e18,
+            10000e18,
+            365 days,
+            30 days,
+            2,
+            30 days,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 1000,
+            levelTwo: 500,
+            levelThree: 250,
+            levelFour: 0,
+            levelFive: 0,
+            levelSix: 0
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        changePrank(other);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 1000e18, address(0));
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 1000e18, other);
+
+        vm.warp(block.timestamp + 45 days);
+        changePrank(other);
+
+        staking.claimRewardForRef(1, user2);
+
+        changePrank(user2);
+        staking.claimReward(1);
+
+        vm.warp(block.timestamp + 10 days);
+
+        bytes4 selector = bytes4(keccak256("AmountIsZero()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.claimRewardForRef(1, user2);
+
+        changePrank(user2);
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.claimReward(1);
+
+        changePrank(other);
+        vm.warp(block.timestamp + 26 weeks);
+        staking.restakeByRef(1, user2, address(owner));
+
+        vm.warp(block.timestamp + 26 weeks);
+        staking.restakeByRef(1, user2, address(owner));
+
+        staking.claimReward(1);
+    }
+
+    function testMulipleTimesRestakeByRef() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user1, 10000e18);
+
+        deal(address(deXa), user2, 10000e18);
+        deal(address(deXa), other, 10000e18);
+        deal(address(deXa), other2, 10000e18);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(0),
+            1000,
+            5e18,
+            10000e18,
+            365 days,
+            30 days,
+            2,
+            30 days,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 1000,
+            levelTwo: 500,
+            levelThree: 250,
+            levelFour: 0,
+            levelFive: 0,
+            levelSix: 0
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        // changePrank(other);
+
+        // IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        // staking.stake(1, 1000e18, address(0));
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        staking.stake(1, 1000e18, other);
+
+        vm.warp(block.timestamp + 45 days);
+        changePrank(other);
+
+        staking.claimRewardForRef(1, user2);
+
+        changePrank(user2);
+        staking.claimReward(1);
+
+        vm.warp(block.timestamp + 10 days);
+
+        bytes4 selector = bytes4(keccak256("AmountIsZero()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.claimRewardForRef(1, user2);
+
+        changePrank(user2);
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.claimReward(1);
+
+        changePrank(other);
+        vm.warp(block.timestamp + 26 weeks);
+        staking.restakeByRef(1, user2, address(owner));
+
+        vm.warp(block.timestamp + 26 weeks);
+        staking.restakeByRef(1, user2, address(owner));
+    }
+
     function testShouldFailRestakeByRefDuePoolInActive() external {
         vm.startPrank(user1);
 
