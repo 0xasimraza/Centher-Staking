@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
-import "forge-std/console2.sol";
 
 import "./interfaces/ICentherStaking.sol";
 
@@ -67,21 +66,13 @@ contract CentherStaking is ICentherStaking {
         _unlocked = 1;
     }
 
-    // function initialize(address _registration, address _platform) public {
-    //     require(!initialized, "Contract instance has already been initialized");
-    //     initialized = true;
-    //     register = IRegistration(_registration);
-    //     _unlocked = 1;
-    //     platform = _platform;
-    //     platformFees = 1 ether;
-    //     referralDeep = 6;
-    // }
-
-    constructor(address _registration, address _platform) {
+    function initialize(address _registration, address _platform) public {
+        require(!initialized, "Contract instance has already been initialized");
+        initialized = true;
         register = IRegistration(_registration);
-        platform = _platform;
         _unlocked = 1;
-        platformFees = 0.00001 ether;
+        platform = _platform;
+        platformFees = 1 ether;
         referralDeep = 6;
     }
 
@@ -90,10 +81,8 @@ contract CentherStaking is ICentherStaking {
         external
         payable
         override
-        returns (
-            // onlyCitizen
-            uint256 newPoolId
-        )
+        onlyCitizen
+        returns (uint256 newPoolId)
     {
         if (_info.stakeToken == address(0)) {
             revert InvalidTokenAddress();
