@@ -927,7 +927,7 @@ contract CentherStaking is ICentherStaking {
     function _stakeByRef(uint256 _poolId, uint256 _amount, address _referrer) internal {
         PoolInfo memory _poolInfo = poolsInfo[_poolId];
         (,,, uint256 totalStakeAmount) = calculateTotalReward(_poolId, msg.sender);
-        console2.log("totalStakeAmount: ", totalStakeAmount);
+
         if (totalStakeAmount == 0) {
             userReferrer[_poolId][msg.sender] = _referrer;
 
