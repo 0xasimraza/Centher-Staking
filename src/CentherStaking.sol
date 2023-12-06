@@ -76,14 +76,6 @@ contract CentherStaking is ICentherStaking {
         referralDeep = 6;
     }
 
-    // constructor(address _registration, address _platform) {
-    //     register = IRegistration(_registration);
-    //     platform = _platform;
-    //     _unlocked = 1;
-    //     platformFees = 0.00001 ether;
-    //     referralDeep = 6;
-    // }
-
     ///@inheritdoc ICentherStaking
     function createPool(PoolCreationInputs calldata _info)
         external
