@@ -122,6 +122,10 @@ interface ICentherStaking {
     /// @param topupRewardAmount a parameter, contain topup of reward amount to contract
     event AmountStaked(uint256 poolId, address user, uint256 amount, address referrer, uint256 topupRewardAmount);
 
+    event AmountRestaked(
+        uint256 poolId, address user, uint256 amount, bool isRef, address referrer, uint256 topupRewardAmount
+    );
+
     /// @notice AmountUnstaked event which contains user unstake details
     /// @param poolId a parameter, unstake amount on this pool Id
     /// @param user a parameter, withdrawer address
