@@ -112,7 +112,7 @@ interface ICentherStaking {
 
     event PoolCreatedWithTax(uint256 poolId, uint256 tax);
 
-    event TaxBurn(uint256 poolId, address user, bool isRef , uint256 tax);
+    event TaxBurn(uint256 poolId, address user, bool isRef, uint256 tax);
 
     /// @notice AmountStaked event which contains user stake details
     /// @param poolId a parameter, stake amount on this pool Id
@@ -121,6 +121,10 @@ interface ICentherStaking {
     /// @param referrer a parameter, referrer address
     /// @param topupRewardAmount a parameter, contain topup of reward amount to contract
     event AmountStaked(uint256 poolId, address user, uint256 amount, address referrer, uint256 topupRewardAmount);
+
+    event AmountRestaked(
+        uint256 poolId, address user, uint256 amount, bool isRef, address referrer, uint256 topupRewardAmount
+    );
 
     /// @notice AmountUnstaked event which contains user unstake details
     /// @param poolId a parameter, unstake amount on this pool Id
@@ -216,6 +220,8 @@ interface ICentherStaking {
     /// @dev In referrer params, pass either address of referrer (exist staker of centher staking) or address zero
     /// @param _poolId a parameter, pass pool Id to stake amount on the desired pool
     function restake(uint256 _poolId) external;
+
+    function restakeByRef(uint256 _poolId, address _user, address referrer) external;
 
     /// @notice Untake amount from specific pool
     /// @param _poolId a parameter, pass pool Id to unstake amount on the specific pool
