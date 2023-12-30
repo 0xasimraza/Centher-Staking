@@ -225,8 +225,9 @@ interface ICentherStaking {
 
     /// @notice Untake amount from specific pool
     /// @param _poolId a parameter, pass pool Id to unstake amount on the specific pool
-    /// @param _amount a parameter , pass unstake amount from specific pool
-    function unstake(uint256 _poolId, uint256 _amount) external;
+    // / @param _amount a parameter , pass unstake amount from specific pool
+    // function unstake(uint256 _poolId, uint256 _amount) external;
+    function unstake(uint256 _poolId, uint256[] memory _stakeIds) external;
 
     /// @notice Claim reward from specific pool
     /// @param _poolId a parameter, pass pool Id to claim reward amount from the specific pool
