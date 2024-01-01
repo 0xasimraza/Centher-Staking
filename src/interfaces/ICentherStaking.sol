@@ -196,7 +196,7 @@ interface ICentherStaking {
     error InvalidTaxationPercent();
     error AlreadySelected();
     error NonRefundable();
-    error UnclaimedRewardExist();
+    error ClaimedRewardExist();
 
     /// @notice Creates a pool for staking
     /// @dev In _info params all the duration should pass in epoch seconds except startTime. Percentages calculations according to 10000 ~= 100%.
