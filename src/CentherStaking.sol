@@ -585,6 +585,13 @@ contract CentherStaking is ICentherStaking {
         uint256 totalUnstakeAmount;
         uint256 cancellationFees;
         uint256 sendingAmountToOwner;
+        uint256 totalUnclaimableReward;
+
+        (, totalUnclaimableReward,) = _calculateClaimableReward2(_poolId, msg.sender, _stakeIds);
+
+        if(totalUnclaimableReward > 0) {
+            revert UnclaimedRewardExist();
+        }
 
         for (uint256 i = 0; i < _stakeIds.length; i++) {
             Stake memory _stakes = userStakes[_poolId][msg.sender][_stakeIds[i]];
@@ -934,6 +941,49 @@ contract CentherStaking is ICentherStaking {
 
                 claimableReward += reward;
             }
+        }
+    }
+
+    function _calculateClaimableReward2(uint256 _poolId, address _user, uint256[] memory stakeIds)
+        internal
+        view
+        returns (uint256 claimableReward, uint256 unclaimableReward, uint256 totalStakedAmount)
+    {
+        uint256 passdTime;
+
+        for (uint256 i; i < stakeIds.length; i++) {
+            totalStakedAmount += userStakes[_poolId][_user][stakeIds[i]].stakedAmount;
+
+            unchecked {
+                passdTime = block.timestamp > userStakes[_poolId][_user][stakeIds[i]].stakingDuration
+                    ? userStakes[_poolId][_user][stakeIds[i]].stakingDuration
+                        - userStakes[_poolId][_user][stakeIds[i]].lastRewardClaimed
+                    : _getLastClaimWindow(userStakes[_poolId][_user][stakeIds[i]], poolsInfo[_poolId].claimDuration);
+            }
+
+            if (
+                block.timestamp - userStakes[_poolId][_user][stakeIds[i]].lastRewardClaimed
+                    >= poolsInfo[_poolId].claimDuration
+            ) {
+                uint256 reward = _calcReward(_poolId, passdTime, userStakes[_poolId][_user][stakeIds[i]].stakedAmount);
+
+                if (
+                    userStakes[_poolId][_user][stakeIds[i]].lastRewardClaimed
+                        == userStakes[_poolId][_user][stakeIds[i]].stakedTime
+                        && passdTime < poolsInfo[_poolId].setting.firstRewardDuration
+                ) {
+                    reward = 0;
+                }
+
+                claimableReward += reward;
+            }
+        }
+
+        unchecked {
+            uint256 totalReward = (
+                totalStakedAmount * poolsInfo[_poolId].annualStakingRewardRate * poolsInfo[_poolId].rate
+            ) / (10000 * 1e18);
+            unclaimableReward = totalReward - claimableReward;
         }
     }
 
