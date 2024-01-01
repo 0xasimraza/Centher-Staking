@@ -66,34 +66,32 @@ contract CentherStaking is ICentherStaking {
         _unlocked = 1;
     }
 
-    // function initialize(address _registration, address _platform) public {
-    //     require(!initialized, "Contract instance has already been initialized");
-    //     initialized = true;
-    //     register = IRegistration(_registration);
-    //     _unlocked = 1;
-    //     platform = _platform;
-    //     platformFees = 1 ether;
-    //     referralDeep = 6;
-    // }
-
-    constructor(address _registration, address _platform) {
+    function initialize(address _registration, address _platform) public {
+        require(!initialized, "Contract instance has already been initialized");
         initialized = true;
         register = IRegistration(_registration);
         _unlocked = 1;
         platform = _platform;
-        platformFees = 0.00001 ether; //1 ether;
+        platformFees = 1 ether;
         referralDeep = 6;
     }
+
+    // constructor(address _registration, address _platform) {
+    //     initialized = true;
+    //     register = IRegistration(_registration);
+    //     _unlocked = 1;
+    //     platform = _platform;
+    //     platformFees = 0.00001 ether; //1 ether;
+    //     referralDeep = 6;
+    // }
 
     ///@inheritdoc ICentherStaking
     function createPool(PoolCreationInputs calldata _info)
         external
         payable
         override
-        returns (
-            // onlyCitizen
-            uint256 newPoolId
-        )
+        onlyCitizen
+        returns (uint256 newPoolId)
     {
         if (_info.stakeToken == address(0)) {
             revert InvalidTokenAddress();
@@ -579,139 +577,6 @@ contract CentherStaking is ICentherStaking {
         }
     }
 
-    ///@inheritdoc ICentherStaking
-    // function unstake(uint256 _poolId, uint256 _amount) external override nonReentrant {
-    //     if (nonRefundable[_poolId]) {
-    //         revert NonRefundable();
-    //     }
-
-    //     if (_amount <= 0) {
-    //         revert InvalidUnstakeAmount();
-    //     }
-
-    //     (, uint256 amountToCancel) = _calculateClaimableReward(_poolId, msg.sender);
-
-    //     if (amountToCancel < _amount) {
-    //         revert UserNotEnoughStake();
-    //     }
-
-    //     (uint256 extraSlot, Stake[] memory unstakablesStakes) = _calcUserUnstakable(_poolId, msg.sender);
-
-    //     if (extraSlot == 0 && poolsInfo[_poolId].setting.isUnstakable == false) {
-    //         revert Locked();
-    //     }
-
-    //     amountToCancel = 0;
-    //     uint256 sendingAmountToStaker;
-    //     uint256 sendingAmountToOwner;
-
-    //     if (extraSlot > 0) {
-    //         uint256 _remained = _amount;
-    //         for (uint256 i; i < unstakablesStakes.length; i++) {
-    //             if (unstakablesStakes[i].stakedAmount >= _remained) {
-    //                 unstakablesStakes[i].stakedAmount -= _remained;
-    //                 userStakes[_poolId][msg.sender][i].stakedAmount -= _remained;
-
-    //                 _remained = 0;
-    //                 break;
-    //             } else {
-    //                 _remained -= unstakablesStakes[i].stakedAmount;
-    //                 userStakes[_poolId][msg.sender][i].stakedAmount = 0;
-    //                 unstakablesStakes[i].stakedAmount = 0;
-    //             }
-    //         }
-
-    //         if (_remained > 0) {
-    //             amountToCancel = _remained;
-    //         }
-    //     } else {
-    //         amountToCancel = _amount;
-    //     }
-
-    //     extraSlot = 0;
-
-    //     if (amountToCancel > 0) {
-    //         Stake[] memory stakes = _getUserValidStakes(_poolId, msg.sender);
-
-    //         uint256 remainedToCancel = amountToCancel;
-    //         uint256 refundRefReward;
-
-    //         address[] memory referrers = _getReferrerAddresses(_poolId, msg.sender);
-    //         AffiliateSetting[] memory levelsInfo = affiliateSettings[_poolId];
-
-    //         for (uint256 i; i < stakes.length; i++) {
-    //             if (stakes[i].stakedAmount >= remainedToCancel) {
-    //                 sendingAmountToOwner += _returnRewardAmountToOwner(_poolId, msg.sender, remainedToCancel, i);
-
-    //                 stakes[i].stakedAmount -= remainedToCancel;
-    //                 userStakes[_poolId][msg.sender][i].stakedAmount -= remainedToCancel;
-
-    //                 if (poolsInfo[_poolId].rewardModeForRef == RefMode.TimeBasedReward) {
-    //                     for (uint8 j = 0; j < referrers.length; j++) {
-    //                         if (referrers[j] != address(0) && levelsInfo[j].percent != 0) {
-    //                             unchecked {
-    //                                 refundRefReward += (
-    //                                     ((remainedToCancel * levelsInfo[j].percent) / 10000)
-    //                                         * (stakes[i].stakingDuration - stakes[i].lastRewardClaimed)
-    //                                 ) / _MONTH;
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-
-    //                 break;
-    //             } else {
-    //                 sendingAmountToOwner += _returnRewardAmountToOwner(_poolId, msg.sender, stakes[i].stakedAmount, i);
-
-    //                 if (poolsInfo[_poolId].rewardModeForRef == RefMode.TimeBasedReward) {
-    //                     for (uint8 j = 0; j < referrers.length; j++) {
-    //                         if (referrers[j] != address(0) && levelsInfo[j].percent != 0) {
-    //                             unchecked {
-    //                                 refundRefReward += (
-    //                                     ((stakes[i].stakedAmount * levelsInfo[j].percent) / 10000)
-    //                                         * (stakes[i].stakingDuration - stakes[i].lastRewardClaimed)
-    //                                 ) / _MONTH;
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-
-    //                 stakes[i].stakedAmount = 0;
-    //                 userStakes[_poolId][msg.sender][i].stakedAmount = 0;
-    //             }
-    //         }
-    //         unchecked {
-    //             extraSlot = (amountToCancel * poolsInfo[_poolId].setting.cancellationFees) / 10000;
-    //             sendingAmountToStaker = _amount - extraSlot;
-    //         }
-
-    //         sendingAmountToOwner += refundRefReward;
-    //     } else {
-    //         sendingAmountToStaker = _amount;
-    //         sendingAmountToOwner = 0;
-    //     }
-
-    //     if (poolsInfo[_poolId].setting.isLP) {
-    //         if (extraSlot > 0) {
-    //             IERC20(poolsInfo[_poolId].stakeToken).transfer(poolsInfo[_poolId].poolOwner, extraSlot);
-    //         }
-
-    //         if (sendingAmountToOwner > 0) {
-    //             IERC20(poolsInfo[_poolId].rewardToken).transfer(poolsInfo[_poolId].poolOwner, sendingAmountToOwner);
-    //         }
-
-    //         if (sendingAmountToStaker > 0) {
-    //             IERC20(poolsInfo[_poolId].stakeToken).transfer(msg.sender, sendingAmountToStaker);
-    //         }
-    //     } else {
-    //         IERC20(poolsInfo[_poolId].stakeToken).transferFrom(
-    //             poolsInfo[_poolId].poolOwner, msg.sender, sendingAmountToStaker
-    //         );
-    //     }
-
-    //     emit AmountUnstaked(_poolId, msg.sender, _amount, extraSlot, sendingAmountToOwner);
-    // }
-
     function unstake(uint256 _poolId, uint256[] memory _stakeIds) external override nonReentrant {
         if (nonRefundable[_poolId]) {
             revert NonRefundable();
@@ -726,7 +591,6 @@ contract CentherStaking is ICentherStaking {
 
             // if amount is valid for unstake
             if (_stakes.stakedAmount > 0) {
-
                 if (_stakes.stakingDuration > block.timestamp) {
                     revert Locked();
                 }
@@ -738,7 +602,6 @@ contract CentherStaking is ICentherStaking {
 
         // check LP workings
         if (poolsInfo[_poolId].setting.isLP) {
-
             IERC20(poolsInfo[_poolId].stakeToken).transfer(msg.sender, totalUnstakeAmount);
         } else {
             IERC20(poolsInfo[_poolId].stakeToken).transferFrom(
