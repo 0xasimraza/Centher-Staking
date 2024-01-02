@@ -232,7 +232,8 @@ interface ICentherStaking {
 
     /// @notice Claim reward from specific pool
     /// @param _poolId a parameter, pass pool Id to claim reward amount from the specific pool
-    function claimReward(uint256 _poolId) external;
+    // function claimReward(uint256 _poolId) external;
+    function claimReward(uint256 _poolId, uint256[] memory _stakedIds) external;
 
     /// @notice Claim referral reward from specific pool
     /// @param _poolId a parameter, pass pool Id to claim referral reward amount from the specific pool

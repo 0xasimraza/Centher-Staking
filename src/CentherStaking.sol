@@ -91,9 +91,9 @@ contract CentherStaking is ICentherStaking {
         external
         payable
         override
-            onlyCitizen
+              onlyCitizen
         returns (
-        
+      
             uint256 newPoolId
         )
     {
@@ -609,24 +609,26 @@ contract CentherStaking is ICentherStaking {
     }
 
     ///@inheritdoc ICentherStaking
-    function claimReward(uint256 _poolId) external override {
-        Stake[] memory _stakes = userStakes[_poolId][msg.sender];
+    function claimReward(uint256 _poolId, uint256[] memory _stakedIds) external override {
         uint256 passdTime;
         uint256 _claimableReward;
+        uint256 burnedAmount;
 
-        for (uint256 i; i < _stakes.length; i++) {
+        for (uint256 i; i < _stakedIds.length; i++) {
+            Stake memory _stakes = userStakes[_poolId][msg.sender][_stakedIds[i]];
             unchecked {
-                passdTime = block.timestamp > _stakes[i].stakingDuration
-                    ? _stakes[i].stakingDuration - _stakes[i].lastRewardClaimed
-                    : _getLastClaimWindow(_stakes[i], poolsInfo[_poolId].claimDuration);
+                passdTime = block.timestamp > _stakes.stakingDuration
+                    ? _stakes.stakingDuration - _stakes.lastRewardClaimed
+                    : _getLastClaimWindow(_stakes, poolsInfo[_poolId].claimDuration);
             }
 
-            if (block.timestamp - _stakes[i].lastRewardClaimed >= poolsInfo[_poolId].claimDuration) {
-                uint256 reward = _calcReward(_poolId, passdTime, _stakes[i].stakedAmount);
+            if (block.timestamp - _stakes.lastRewardClaimed >= poolsInfo[_poolId].claimDuration) {
+                uint256 burn;
+                uint256 reward = _calcReward(_poolId, passdTime, _stakes.stakedAmount);
 
                 if (
-                    _stakes[i].lastRewardClaimed == _stakes[i].stakedTime
-                        && block.timestamp - _stakes[i].lastRewardClaimed < poolsInfo[_poolId].setting.firstRewardDuration
+                    _stakes.lastRewardClaimed == _stakes.stakedTime
+                        && block.timestamp - _stakes.lastRewardClaimed < poolsInfo[_poolId].setting.firstRewardDuration
                 ) {
                     reward = 0;
                 }
@@ -634,20 +636,27 @@ contract CentherStaking is ICentherStaking {
                 if (reward != 0) {
                     _claimableReward += reward;
 
-                    userStakes[_poolId][msg.sender][i].claimedReward += reward;
-                    userStakes[_poolId][msg.sender][i].lastRewardClaimed = _stakes[i].lastRewardClaimed + passdTime;
+                    userStakes[_poolId][msg.sender][_stakedIds[i]].claimedReward += reward;
+                    userStakes[_poolId][msg.sender][_stakedIds[i]].lastRewardClaimed =
+                        _stakes.lastRewardClaimed + passdTime;
+                    emit RewardClaimed(_poolId, msg.sender, reward, false);
+                }
+
+                if (poolTax[_poolId] > 0 && reward > 0) {
+                    unchecked {
+                        burn = (reward * poolTax[_poolId]) / 10000;
+                        burnedAmount += burn;
+                        emit TaxBurn(_poolId, msg.sender, false, burn);
+                    }
                 }
             }
         }
 
         if (_claimableReward > 0) {
-            uint256 burnedAmount;
-            if (poolTax[_poolId] > 0) {
-                unchecked {
-                    burnedAmount = (_claimableReward * poolTax[_poolId]) / 10000;
-                    _claimableReward = _claimableReward - burnedAmount;
-                }
+            unchecked {
+                _claimableReward = _claimableReward - burnedAmount;
             }
+
             if (poolsInfo[_poolId].setting.isLP) {
                 IERC20(poolsInfo[_poolId].rewardToken).transfer(msg.sender, _claimableReward);
                 if (burnedAmount > 0) {
@@ -663,8 +672,6 @@ contract CentherStaking is ICentherStaking {
                     );
                 }
             }
-            emit RewardClaimed(_poolId, msg.sender, _claimableReward, false);
-            emit TaxBurn(_poolId, msg.sender, false, burnedAmount);
         } else {
             revert AmountIsZero();
         }
