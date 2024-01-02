@@ -77,23 +77,22 @@ contract CentherStaking is ICentherStaking {
     }
 
     //remove before live on mainnet
-    // constructor(address _registration, address _platform) {
-    //     initialized = true;
-    //     register = IRegistration(_registration);
-    //     _unlocked = 1;
-    //     platform = _platform;
-    //     platformFees = 0.00001 ether; //1 ether;
-    //     referralDeep = 6;
-    // }
+    constructor(address _registration, address _platform) {
+        initialized = true;
+        register = IRegistration(_registration);
+        _unlocked = 1;
+        platform = _platform;
+        platformFees = 0.00001 ether; //1 ether;
+        referralDeep = 6;
+    }
 
     ///@inheritdoc ICentherStaking
     function createPool(PoolCreationInputs calldata _info)
         external
         payable
         override
-              onlyCitizen
         returns (
-      
+            // onlyCitizen
             uint256 newPoolId
         )
     {
@@ -776,6 +775,24 @@ contract CentherStaking is ICentherStaking {
         )
     {
         (totalClaimableReward, totalStakeAmount) = _calculateClaimableReward(poolId, user);
+        unchecked {
+            totalReward =
+                (totalStakeAmount * poolsInfo[poolId].annualStakingRewardRate * poolsInfo[poolId].rate) / (10000 * 1e18);
+            totolUnclaimableReward = totalReward - totalClaimableReward;
+        }
+    }
+
+    function calculateTotalRewardPerStakes(uint256 poolId, address user, uint256[] memory stakeIds)
+        public
+        view
+        returns (
+            uint256 totalReward,
+            uint256 totalClaimableReward,
+            uint256 totolUnclaimableReward,
+            uint256 totalStakeAmount
+        )
+    {
+        (totalClaimableReward, totalStakeAmount) = _calculateClaimableReward2(poolId, user, stakeIds);
         unchecked {
             totalReward =
                 (totalStakeAmount * poolsInfo[poolId].annualStakingRewardRate * poolsInfo[poolId].rate) / (10000 * 1e18);
