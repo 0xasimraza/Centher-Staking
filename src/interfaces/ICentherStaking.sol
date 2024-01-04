@@ -150,19 +150,10 @@ interface ICentherStaking {
     /// @param poolState a parameter, pool status is active or not
     event PoolStateChanged(uint256 poolId, bool poolState);
 
-    /// @notice RefRewardPaid event which contains referrer claimed reward details
-    /// @param poolId a parameter, referrer claimed amount on this pool Id
-    /// @param staker a parameter, claimer address
-    /// @param reward a parameter, claimed reward amount
-    /// @param referrer a parameter, referrer address
-    event RefRewardPaid(uint256 poolId, address staker, uint256 reward, address referrer);
-
     /// @notice PlatformFeesUpdated event which emit platform old and new fees
     /// @param oldFees a parameter, old platform fees
     /// @param updatedFees a parameter, new platform fees
     event PlatformFeesUpdated(uint256 oldFees, uint256 updatedFees);
-
-    event ReferrerSet(address user, address referrer, uint256 poolId);
 
     event UpdateNonRefundableStatus(uint256 poolId, bool status);
 
