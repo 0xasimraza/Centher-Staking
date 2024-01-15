@@ -211,7 +211,7 @@ interface ICentherStaking {
     /// @notice Restake claimable reward amount in specific pool
     /// @dev In referrer params, pass either address of referrer (exist staker of centher staking) or address zero
     /// @param _poolId a parameter, pass pool Id to stake amount on the desired pool
-    function restake(uint256 _poolId) external;
+    // function restake(uint256 _poolId) external;
 
     function restakeByRef(uint256 _poolId, address _user, address referrer) external;
 
