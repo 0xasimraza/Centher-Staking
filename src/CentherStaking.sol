@@ -76,16 +76,6 @@ contract CentherStaking is ICentherStaking {
         referralDeep = 6;
     }
 
-    //remove before live on mainnet
-    // constructor(address _registration, address _platform) {
-    //     initialized = true;
-    //     register = IRegistration(_registration);
-    //     _unlocked = 1;
-    //     platform = _platform;
-    //     platformFees = 0.00001 ether; //1 ether;
-    //     referralDeep = 6;
-    // }
-
     ///@inheritdoc ICentherStaking
     function createPool(PoolCreationInputs calldata _info)
         external
@@ -211,7 +201,6 @@ contract CentherStaking is ICentherStaking {
         override
         onlyPoolOwner(_poolId)
     {
-        // PoolInfo memory pool = poolsInfo[_poolId];
         if (poolsInfo[_poolId].setting.isActive) {
             revert CannotSetAffiliateSettingForActivePool();
         }
@@ -586,11 +575,10 @@ contract CentherStaking is ICentherStaking {
             revert ClaimedRewardExist();
         }
 
-        for (uint256 i = 0; i < _stakeIds.length; i++) {
+        for (uint256 i; i < _stakeIds.length; i++) {
             uint256 unstakeAmount;
             Stake memory _stakes = userStakes[_poolId][msg.sender][_stakeIds[i]];
 
-            // if amount is valid for unstake
             if (_stakes.stakedAmount > 0) {
                 if (_stakes.stakingDuration > block.timestamp) {
                     revert Locked();
@@ -604,7 +592,6 @@ contract CentherStaking is ICentherStaking {
             emit AmountUnstaked(_poolId, msg.sender, unstakeAmount, _stakeIds[i], 0);
         }
 
-        // check LP workings
         if (poolsInfo[_poolId].setting.isLP) {
             IERC20(poolsInfo[_poolId].stakeToken).transfer(msg.sender, totalUnstakeAmount);
         } else {
@@ -777,6 +764,7 @@ contract CentherStaking is ICentherStaking {
             }
             emit RewardClaimed(_poolId, msg.sender, totalReward, true);
             emit TaxBurn(_poolId, msg.sender, true, burnedAmount);
+            emit LinkRefReward(_poolId, msg.sender, _user, levels);
         } else {
             revert AmountIsZero();
         }

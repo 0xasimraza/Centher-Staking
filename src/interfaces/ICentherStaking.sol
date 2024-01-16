@@ -157,6 +157,8 @@ interface ICentherStaking {
 
     event UpdateNonRefundableStatus(uint256 poolId, bool status);
 
+    event LinkRefReward(uint256 poolId, address referrer, address referral, uint256 level);
+
     error Locked();
     error OnlyOwner();
     error NotCitizen();
