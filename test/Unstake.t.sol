@@ -1514,4 +1514,92 @@ contract CentherStakingTest is Test {
         referrals[1] = other2;
         staking.batchRestakeByRef(1, referrals);
     }
+
+    function testPlayClaimRewardWithDifferentTime() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user2, 5000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(busd),
+            2000,
+            5e18,
+            10000e18,
+            365 days,
+            1 weeks,
+            1,
+            1 weeks,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            0
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 600,
+            levelTwo: 400,
+            levelThree: 200,
+            levelFour: 200,
+            levelFive: 200,
+            levelSix: 200
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        assert(staking.poolIds() == 1);
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+        staking.stake(1, 750e18, address(0));
+
+        vm.warp(block.timestamp + 1 weeks);
+        staking.stake(1, 750e18, address(0));
+
+        vm.warp(block.timestamp + 1 weeks);
+        staking.stake(1, 750e18, address(0));
+
+        vm.warp(block.timestamp + 2 weeks);
+
+        uint256[] memory stakeIds = new uint256[](1);
+        stakeIds[0] = 2;
+        staking.claimReward(1, stakeIds);
+
+        stakeIds[0] = 0;
+        staking.claimReward(1, stakeIds);
+
+        vm.warp(block.timestamp + 2 weeks);
+
+        staking.calculateTotalRewardPerStake(1, user2, 0);
+
+        // all stakes claim reward
+        uint256[] memory stakeIds2 = new uint256[](3);
+        stakeIds2[0] = 2;
+        stakeIds2[1] = 0;
+        stakeIds2[2] = 1;
+
+        staking.claimReward(1, stakeIds2);
+
+        vm.warp(block.timestamp + 3 days);
+
+        bytes4 selector = bytes4(keccak256("AmountIsZero()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.claimReward(1, stakeIds2);
+
+        vm.warp(block.timestamp + 4 days);
+        staking.claimReward(1, stakeIds2);
+    }
 }
