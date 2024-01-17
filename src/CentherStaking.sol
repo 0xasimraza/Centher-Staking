@@ -475,9 +475,9 @@ contract CentherStaking is ICentherStaking {
         emit AmountRestaked(_poolId, msg.sender, claimableReward, false, userReferrer[_poolId][msg.sender], totalReward);
     }
 
-    function batchRestakeByRef(uint256 _poolId, address[] memory _user) external {
+    function batchRestakeByRef(uint256 _poolId, address[] memory _user, address _referrer) external {
         for (uint256 i; i < _user.length; i++) {
-            restakeByRef(_poolId, _user[i], msg.sender);
+            restakeByRef(_poolId, _user[i], _referrer);
         }
     }
 
@@ -557,7 +557,7 @@ contract CentherStaking is ICentherStaking {
 
             if (claimableReward <= 0) revert InvalidStakeAmount();
 
-            _stakeByRef(_poolId, claimableReward, _referrer);
+            _stakeByRef(_poolId, claimableReward, _user, _referrer, levels);
         }
     }
 
@@ -898,7 +898,9 @@ contract CentherStaking is ICentherStaking {
         }
     }
 
-    function _stakeByRef(uint256 _poolId, uint256 _amount, address _referrer) internal {
+    function _stakeByRef(uint256 _poolId, uint256 _amount, address _user, address _referrer, uint256 _levels)
+        internal
+    {
         (,,, uint256 totalStakeAmount) = calculateTotalReward(_poolId, msg.sender);
 
         if (totalStakeAmount == 0) {
@@ -944,6 +946,7 @@ contract CentherStaking is ICentherStaking {
         }
 
         emit AmountRestaked(_poolId, msg.sender, _amount, true, _referrer, totalReward);
+        emit LinkRefReward(_poolId, msg.sender, _user, _levels);
     }
 
     function _calcReward(uint256 _poolId, uint256 _duration, uint256 _amount) internal view returns (uint256 reward) {
