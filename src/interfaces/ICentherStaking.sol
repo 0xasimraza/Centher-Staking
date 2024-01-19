@@ -159,6 +159,8 @@ interface ICentherStaking {
 
     event LinkRefReward(uint256 poolId, address referrer, address referral, uint256 level);
 
+    event ExecutorUpdated(address oldExecutor, address newExecutor);
+
     error Locked();
     error OnlyOwner();
     error NotCitizen();
@@ -190,6 +192,9 @@ interface ICentherStaking {
     error AlreadySelected();
     error NonRefundable();
     error ClaimedRewardExist();
+    error OnlyExecutor();
+    error UserStakesNotFound();
+    error ZeroAddressNotAllowed();
 
     /// @notice Creates a pool for staking
     /// @dev In _info params all the duration should pass in epoch seconds except startTime. Percentages calculations according to 10000 ~= 100%.
