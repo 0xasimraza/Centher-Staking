@@ -126,7 +126,7 @@ interface ICentherStaking {
         uint256 poolId, address user, uint256 amount, bool isRef, address referrer, uint256 topupRewardAmount
     );
 
-    event AutoRestaked(uint256 poolId, address user, uint256 amount, uint256 topupRewardAmount, bool isNewStake);
+    event AutoRestaked(uint256 poolId, address user,uint256 stakeId, uint256 amount, bool isNewStake);
 
     /// @notice AmountUnstaked event which contains user unstake details
     /// @param poolId a parameter, unstake amount on this pool Id

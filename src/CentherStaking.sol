@@ -90,8 +90,10 @@ contract CentherStaking is ICentherStaking {
         external
         payable
         override
-        onlyCitizen
-        returns (uint256 newPoolId)
+        returns (
+          
+            uint256 newPoolId
+        )
     {
         if (_info.stakeToken == address(0)) {
             revert InvalidTokenAddress();
@@ -510,7 +512,7 @@ contract CentherStaking is ICentherStaking {
             revert PoolNotActive();
         }
 
-        bool isNewStake;
+        // bool isNewStake;
         uint256 passdTime;
         uint256 claimableReward;
 
@@ -542,7 +544,7 @@ contract CentherStaking is ICentherStaking {
 
                         Stake memory _stake = Stake({
                             stakingDuration: block.timestamp + poolsInfo[_poolId].stakingDurationPeriod,
-                            stakedAmount: claimableReward,
+                            stakedAmount: reward,
                             stakedTime: block.timestamp,
                             lastRewardClaimed: block.timestamp,
                             claimedReward: 0
@@ -550,12 +552,14 @@ contract CentherStaking is ICentherStaking {
 
                         userStakes[_poolId][_user].push(_stake);
 
-                        isNewStake = true;
+                        // isNewStake = true;
+                        emit AutoRestaked(_poolId, _user, userStakes[_poolId][_user].length-1, reward, true);
                     } else {
                         userStakes[_poolId][_user][_stakeIds[i]].lastRewardClaimed =
                             _stakes.lastRewardClaimed + passdTime;
 
-                        userStakes[_poolId][_user][_stakeIds[i]].stakedAmount += claimableReward;
+                        userStakes[_poolId][_user][_stakeIds[i]].stakedAmount += reward;
+                        emit AutoRestaked(_poolId, _user, _stakeIds[i], reward, false);
                     }
                 }
             }
@@ -565,16 +569,13 @@ contract CentherStaking is ICentherStaking {
             revert InvalidStakeAmount();
         }
 
-        uint256 totalReward;
-
         if (poolsInfo[_poolId].setting.isLP) {
-            totalReward = _calcReward(_poolId, poolsInfo[_poolId].stakingDurationPeriod, claimableReward);
+            uint256 totalReward = _calcReward(_poolId, poolsInfo[_poolId].stakingDurationPeriod, claimableReward);
 
             IERC20(poolsInfo[_poolId].rewardToken).transferFrom(
                 poolsInfo[_poolId].poolOwner, address(this), totalReward
             );
         }
-        emit AutoRestaked(_poolId, _user, claimableReward, totalReward, isNewStake);
     }
 
     function batchRestakeByRef(uint256 _poolId, address[] memory _user, address _referrer) external {
