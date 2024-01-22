@@ -52,6 +52,11 @@ export default async function deploy(
     UPGRADEABLE_PROXY,
     CentherStaking
   );
+
+  // const upgraded = await upgrades.forceImport(
+  //   UPGRADEABLE_PROXY,
+  //   CentherStaking
+  // );
   await upgraded.waitForDeployment();
   await delay(26000);
   console.log("Deployed Address", await upgraded.target);

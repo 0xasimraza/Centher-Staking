@@ -90,10 +90,8 @@ contract CentherStaking is ICentherStaking {
         external
         payable
         override
-        returns (
-          
-            uint256 newPoolId
-        )
+        onlyCitizen
+        returns (uint256 newPoolId)
     {
         if (_info.stakeToken == address(0)) {
             revert InvalidTokenAddress();
@@ -512,7 +510,6 @@ contract CentherStaking is ICentherStaking {
             revert PoolNotActive();
         }
 
-        // bool isNewStake;
         uint256 passdTime;
         uint256 claimableReward;
 
@@ -551,9 +548,7 @@ contract CentherStaking is ICentherStaking {
                         });
 
                         userStakes[_poolId][_user].push(_stake);
-
-                        // isNewStake = true;
-                        emit AutoRestaked(_poolId, _user, userStakes[_poolId][_user].length-1, reward, true);
+                        emit AutoRestaked(_poolId, _user, userStakes[_poolId][_user].length - 1, reward, true);
                     } else {
                         userStakes[_poolId][_user][_stakeIds[i]].lastRewardClaimed =
                             _stakes.lastRewardClaimed + passdTime;
