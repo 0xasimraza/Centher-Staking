@@ -1441,7 +1441,7 @@ contract CentherStakingTest is Test {
         address[] memory referrals = new address[](2);
         referrals[0] = user2;
         referrals[1] = other2;
-        staking.batchRestakeByRef(1, referrals);
+        staking.batchRestakeByRef(1, referrals, other);
     }
 
     function testBatchRestakeForRefAfterStakingDuration() external {
@@ -1512,7 +1512,7 @@ contract CentherStakingTest is Test {
         address[] memory referrals = new address[](2);
         referrals[0] = user2;
         referrals[1] = other2;
-        staking.batchRestakeByRef(1, referrals);
+        staking.batchRestakeByRef(1, referrals, other);
     }
 
     function testPlayClaimRewardWithDifferentTime() external {
@@ -1601,5 +1601,406 @@ contract CentherStakingTest is Test {
 
         vm.warp(block.timestamp + 4 days);
         staking.claimReward(1, stakeIds2);
+    }
+
+    function testAutoStakeBeforeStakingDurationEnd() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user1, 10000e18);
+        deal(address(deXa), user2, 10000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(0),
+            200,
+            5e18,
+            10000e18,
+            365 days,
+            30 days,
+            1,
+            30 days,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 600,
+            levelTwo: 400,
+            levelThree: 200,
+            levelFour: 200,
+            levelFive: 200,
+            levelSix: 200
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+        staking.stake(1, 750e18, other);
+
+        vm.warp(block.timestamp + 4 weeks * 3);
+
+        uint256[] memory _stakesId = new uint256[](1);
+        _stakesId[0] = 0;
+
+        changePrank(owner);
+        staking.updateExecutor(other2);
+
+        changePrank(other2);
+        staking.autoUserRestakeByIds(1, user2, _stakesId);
+
+        (, uint256 stakedAmount0,,,) = staking.userStakes(1, user2, 0);
+        // (, uint256 stakedAmount1,,,) = staking.userStakes(1, user2, 1);
+
+        assert(stakedAmount0 == 750e18 + 2.5e18);
+    }
+
+    function testAutoStakeAfterStakingDurationEnd() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user1, 10000e18);
+        deal(address(deXa), user2, 10000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(0),
+            200,
+            5e18,
+            10000e18,
+            365 days,
+            30 days,
+            1,
+            30 days,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 600,
+            levelTwo: 400,
+            levelThree: 200,
+            levelFour: 200,
+            levelFive: 200,
+            levelSix: 200
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+        staking.stake(1, 750e18, other);
+
+        vm.warp(block.timestamp + 4 weeks * 3);
+
+        uint256[] memory _stakesId = new uint256[](1);
+        _stakesId[0] = 0;
+
+        changePrank(owner);
+        staking.updateExecutor(other2);
+
+        vm.warp(block.timestamp + 4 weeks * 51);
+
+        changePrank(other2);
+        staking.autoUserRestakeByIds(1, user2, _stakesId);
+
+        (, uint256 stakedAmount0,,,) = staking.userStakes(1, user2, 0);
+        (, uint256 stakedAmount1,,,) = staking.userStakes(1, user2, 1);
+
+        assert(stakedAmount0 + stakedAmount1 == 750e18 + 15.208333333333333333 ether);
+    }
+
+    function testShouldFailAutoStakeDueToStakerNotExist() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user1, 10000e18);
+        deal(address(deXa), user2, 10000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(0),
+            200,
+            5e18,
+            10000e18,
+            365 days,
+            30 days,
+            1,
+            30 days,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 600,
+            levelTwo: 400,
+            levelThree: 200,
+            levelFour: 200,
+            levelFive: 200,
+            levelSix: 200
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        uint256[] memory _stakesId = new uint256[](1);
+        _stakesId[0] = 0;
+
+        changePrank(owner);
+        staking.updateExecutor(other2);
+
+        changePrank(other2);
+
+        bytes4 selector = bytes4(keccak256("UserStakesNotFound()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.autoUserRestakeByIds(1, user2, _stakesId);
+    }
+
+    function testShouldFailAutoStakeDuePoolNotEligible() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user1, 10000e18);
+        deal(address(deXa), user2, 10000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(busd),
+            200,
+            5e18,
+            10000e18,
+            365 days,
+            30 days,
+            1,
+            30 days,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 600,
+            levelTwo: 400,
+            levelThree: 200,
+            levelFour: 200,
+            levelFive: 200,
+            levelSix: 200
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+        staking.stake(1, 750e18, other);
+
+        vm.warp(block.timestamp + 4 weeks * 3);
+
+        uint256[] memory _stakesId = new uint256[](1);
+        _stakesId[0] = 0;
+
+        changePrank(owner);
+        staking.updateExecutor(other2);
+
+        changePrank(other2);
+        bytes4 selector = bytes4(keccak256("PoolNotEligibleForRestake()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.autoUserRestakeByIds(1, user2, _stakesId);
+    }
+
+    function testShouldFailAutoStakeDuePoolNotActive() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user1, 10000e18);
+        deal(address(deXa), user2, 10000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(0),
+            200,
+            5e18,
+            10000e18,
+            365 days,
+            30 days,
+            1,
+            30 days,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 600,
+            levelTwo: 400,
+            levelThree: 200,
+            levelFour: 200,
+            levelFive: 200,
+            levelSix: 200
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+        staking.stake(1, 750e18, other);
+
+        vm.warp(block.timestamp + 4 weeks * 3);
+
+        uint256[] memory _stakesId = new uint256[](1);
+        _stakesId[0] = 0;
+
+        changePrank(owner);
+        staking.updateExecutor(other2);
+
+        changePrank(user1);
+        staking.togglePoolState(1, false);
+
+        changePrank(other2);
+        bytes4 selector = bytes4(keccak256("PoolNotActive()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.autoUserRestakeByIds(1, user2, _stakesId);
+    }
+
+    function testShouldFailAutoStakeDueToInvalidStake() external {
+        vm.startPrank(user1);
+
+        deal(user1, 100 ether);
+
+        deal(address(deXa), user1, 10000e18);
+        deal(address(deXa), user2, 10000e18);
+
+        IERC20(address(busd)).approve(address(staking), type(uint256).max);
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+
+        ICentherStaking.PoolCreationInputs memory _info = ICentherStaking.PoolCreationInputs(
+            "project",
+            block.timestamp,
+            address(deXa),
+            address(0),
+            200,
+            5e18,
+            10000e18,
+            365 days,
+            30 days,
+            1,
+            30 days,
+            10000e18,
+            100,
+            0,
+            "www.staking.com/1",
+            true,
+            true,
+            true,
+            1000
+        );
+
+        staking.createPool{value: 0.00001 ether}(_info);
+
+        ICentherStaking.AffiliateSettingInput memory _setting = ICentherStaking.AffiliateSettingInput({
+            levelOne: 600,
+            levelTwo: 400,
+            levelThree: 200,
+            levelFour: 200,
+            levelFive: 200,
+            levelSix: 200
+        });
+
+        staking.setAffiliateSetting(1, _setting);
+
+        changePrank(user2);
+
+        IERC20(address(deXa)).approve(address(staking), type(uint256).max);
+        staking.stake(1, 750e18, other);
+
+        vm.warp(block.timestamp + 4 weeks * 3);
+
+        uint256[] memory _stakesId = new uint256[](1);
+        _stakesId[0] = 0;
+
+        staking.claimReward(1, _stakesId);
+
+        changePrank(owner);
+        staking.updateExecutor(other2);
+
+        changePrank(other2);
+        bytes4 selector = bytes4(keccak256("InvalidStakeAmount()"));
+        vm.expectRevert(abi.encodeWithSelector(selector));
+        staking.autoUserRestakeByIds(1, user2, _stakesId);
     }
 }
