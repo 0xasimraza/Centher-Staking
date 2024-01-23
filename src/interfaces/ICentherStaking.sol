@@ -126,7 +126,7 @@ interface ICentherStaking {
         uint256 poolId, address user, uint256 amount, bool isRef, address referrer, uint256 topupRewardAmount
     );
 
-    event AutoRestaked(uint256 poolId, address user,uint256 stakeId, uint256 amount, bool isNewStake);
+    event AutoRestaked(uint256 poolId, address user, uint256 stakeId, uint256 amount, bool isNewStake);
 
     /// @notice AmountUnstaked event which contains user unstake details
     /// @param poolId a parameter, unstake amount on this pool Id
@@ -222,7 +222,7 @@ interface ICentherStaking {
     /// @param _poolId a parameter, pass pool Id to stake amount on the desired pool
     // function restake(uint256 _poolId) external;
 
-    function restakeByRef(uint256 _poolId, address _user, address referrer) external;
+    // function restakeByRef(uint256 _poolId, address _user, address referrer) external;
 
     /// @notice Untake amount from specific pool
     /// @param _poolId a parameter, pass pool Id to unstake amount on the specific pool
@@ -238,7 +238,7 @@ interface ICentherStaking {
     /// @notice Claim referral reward from specific pool
     /// @param _poolId a parameter, pass pool Id to claim referral reward amount from the specific pool
     /// @param _user a parameter, pass user address
-    function claimRewardForRef(uint256 _poolId, address _user) external;
+    // function claimRewardForRef(uint256 _poolId, address _user) external;
 
     /// @notice setter function for pool state
     /// @param _poolId a parameter, pass pool Id to update pool state
