@@ -83,11 +83,8 @@ contract CentherStaking is ICentherStaking {
         external
         payable
         override
-              onlyCitizen
-        returns (
-      
-            uint256 newPoolId
-        )
+        onlyCitizen
+        returns (uint256 newPoolId)
     {
         if (_info.stakeToken == address(0)) {
             revert InvalidTokenAddress();
@@ -880,7 +877,7 @@ contract CentherStaking is ICentherStaking {
         }
     }
 
-    function calculateClaimableRewardForRef(uint256 _poolId, address _user)
+    function calculateClaimableRewardForRef(uint256 _poolId, address _user, address _referrer)
         external
         view
         returns (uint256 claimableReward, uint256 passdTime, uint256 nextTimeToClaim)
@@ -897,13 +894,13 @@ contract CentherStaking is ICentherStaking {
 
             for (uint256 i; i < _stakes.length; i++) {
                 lastClaimedByRef = _stakes[i].stakedTime;
-                if (refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)] != 0) {
-                    lastClaimedByRef = refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)];
+                if (refDetails[createKey(_poolId, _referrer, _user, _stakes[i].stakingDuration)] != 0) {
+                    lastClaimedByRef = refDetails[createKey(_poolId, _referrer, _user, _stakes[i].stakingDuration)];
                 }
                 unchecked {
                     if (block.timestamp > _stakes[i].stakingDuration) {
                         if (
-                            refDetails[createKey(_poolId, msg.sender, _user, _stakes[i].stakingDuration)]
+                            refDetails[createKey(_poolId, _referrer, _user, _stakes[i].stakingDuration)]
                                 > _stakes[i].stakingDuration
                         ) {
                             passdTime = 0;
@@ -1063,7 +1060,7 @@ contract CentherStaking is ICentherStaking {
 
     function _calculateTimeBaseReward(uint256 _poolId, uint256 _amount) internal view returns (uint256 totalReward) {
         address[] memory _referrers = _getReferrerAddresses(_poolId, msg.sender);
-      
+
         for (uint256 i; i < _referrers.length; i++) {
             if (_referrers[i] != address(0) && affiliateSettings[_poolId][i].percent != 0) {
                 unchecked {
