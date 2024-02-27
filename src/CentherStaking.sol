@@ -76,25 +76,13 @@ contract CentherStaking is ICentherStaking {
         referralDeep = 6;
     }
 
-    // function initialize(address _registration, address _platform) public {
-    //     require(!initialized);
-    //     initialized = true;
-    //     register = IRegistration(_registration);
-    //     _unlocked = 1;
-    //     platform = _platform;
-    //     platformFees = 1 ether;
-    //     referralDeep = 6;
-    // }
-
     ///@inheritdoc ICentherStaking
     function createPool(PoolCreationInputs calldata _info)
         external
         payable
         override
-        returns (
-            // onlyCitizen
-            uint256 newPoolId
-        )
+        onlyCitizen
+        returns (uint256 newPoolId)
     {
         if (_info.stakeToken == address(0)) {
             revert InvalidTokenAddress();
