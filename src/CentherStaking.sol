@@ -68,11 +68,13 @@ contract CentherStaking is ICentherStaking {
         _unlocked = 1;
     }
 
-    constructor(address _registration, address _platform) {
+    function initialize(address _registration, address _platform) public {
+        require(!initialized);
+        initialized = true;
         register = IRegistration(_registration);
         _unlocked = 1;
         platform = _platform;
-        platformFees = 0.00001 ether;
+        platformFees = 1 ether;
         referralDeep = 6;
     }
 
