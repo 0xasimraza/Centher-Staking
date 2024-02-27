@@ -68,23 +68,33 @@ contract CentherStaking is ICentherStaking {
         _unlocked = 1;
     }
 
-    function initialize(address _registration, address _platform) public {
-        require(!initialized);
-        initialized = true;
+    constructor(address _registration, address _platform) {
         register = IRegistration(_registration);
         _unlocked = 1;
         platform = _platform;
-        platformFees = 1 ether;
+        platformFees = 0.00001 ether;
         referralDeep = 6;
     }
+
+    // function initialize(address _registration, address _platform) public {
+    //     require(!initialized);
+    //     initialized = true;
+    //     register = IRegistration(_registration);
+    //     _unlocked = 1;
+    //     platform = _platform;
+    //     platformFees = 1 ether;
+    //     referralDeep = 6;
+    // }
 
     ///@inheritdoc ICentherStaking
     function createPool(PoolCreationInputs calldata _info)
         external
         payable
         override
-        onlyCitizen
-        returns (uint256 newPoolId)
+        returns (
+            // onlyCitizen
+            uint256 newPoolId
+        )
     {
         if (_info.stakeToken == address(0)) {
             revert InvalidTokenAddress();
@@ -688,7 +698,7 @@ contract CentherStaking is ICentherStaking {
         uint256 passdTime;
         uint256 claimableReward;
 
-        uint256 levels = _checkLevel(_poolId, _user);
+        uint256 levels = _checkLevel(_poolId, _user, msg.sender);
 
         if (levels != type(uint256).max) {
             Stake[] memory _stakes = userStakes[_poolId][_user];
@@ -742,7 +752,7 @@ contract CentherStaking is ICentherStaking {
 
         uint256 totalReward;
 
-        uint256 levels = _checkLevel(_poolId, _user);
+        uint256 levels = _checkLevel(_poolId, _user, msg.sender);
 
         if (levels != type(uint256).max) {
             Stake[] memory _stakes = userStakes[_poolId][_user];
@@ -886,7 +896,7 @@ contract CentherStaking is ICentherStaking {
             revert PoolRefModeIsNotTimeBased();
         }
 
-        uint256 levels = _checkLevel(_poolId, _user);
+        uint256 levels = _checkLevel(_poolId, _user, _referrer);
 
         uint256 lastClaimedByRef;
         if (levels != type(uint256).max) {
@@ -1044,13 +1054,13 @@ contract CentherStaking is ICentherStaking {
         }
     }
 
-    function _checkLevel(uint256 _poolId, address _user) internal view returns (uint256 level) {
+    function _checkLevel(uint256 _poolId, address _user, address _caller) internal view returns (uint256 level) {
         level = type(uint256).max;
         address[] memory referrers = _getReferrerAddresses(_poolId, _user);
 
         for (uint256 i; i < referrers.length; i++) {
             if (referrers[i] != address(0) && affiliateSettings[_poolId][i].percent != 0) {
-                if (msg.sender == referrers[i]) {
+                if (_caller == referrers[i]) {
                     level = i;
                     break;
                 }
